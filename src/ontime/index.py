@@ -2,10 +2,10 @@
 
 import json
 
-from flask import g
+from flask import g, session
 
 from ontime import app
 
 @app.route('/')
 def index():
-    return session['user_name']
+    pass

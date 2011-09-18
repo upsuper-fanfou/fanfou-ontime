@@ -28,3 +28,5 @@ def teardown_request(exception):
 
 import ontime.index
 import ontime.auth
+import ontime.plans
+import ontime.logs
