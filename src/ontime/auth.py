@@ -44,6 +44,8 @@ def auth():
         'oauth_token': request_token['oauth_token'],
         'oauth_callback': url_for('callback', _external=True)
         })
+    del session['user_id']
+    del session['user_name']
     session['token'] = request_token
     return redirect(url)
 

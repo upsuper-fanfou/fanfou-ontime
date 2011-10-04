@@ -1,11 +1,9 @@
 # - * - coding: UTF-8 - * -
 
-import json
-
-from flask import g, session
+from flask import redirect, url_for
 
 from ontime import app
 
 @app.route('/')
 def index():
-    pass
+    return redirect(url_for('list_plans'))
