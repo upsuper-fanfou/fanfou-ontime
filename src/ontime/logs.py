@@ -34,6 +34,6 @@ def list_logs(page=1, result=None):
     return render_template('logs.html', logs=logs)
 
 result_str = { }
-for key, value in globals().iteritems():
+for key, value in globals().items():
     if key.startswith('RESULT_'):
         result_str[key[7:].lower()] = value

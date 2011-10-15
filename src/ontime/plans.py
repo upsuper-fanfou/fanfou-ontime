@@ -18,7 +18,7 @@ def list_plans(page=1):
         SELECT `id`, `status`, `time`, `period`, `priority`, `timeout`
         FROM `plans` WHERE `user_id`=%s
         ORDER BY `time`, `priority`, `timeout`
-        LIMIT %d, %d
+        LIMIT %s, %s
         """, (session['user_id'], PER_PAGE * (page - 1), PER_PAGE))
     plans = cur.fetchall()
     return render_template('plans.html', plans=plans)
@@ -43,8 +43,10 @@ def check_auth(cur, id):
     if not row:
         return redirect(url_for('list_plans'))
 
-@app.route('/plan/new', methods=['POST'])
+@app.route('/plan/new', methods=['GET', 'POST'])
 def new_plan():
+    if request.method == 'GET':
+        return render_template('new_plan.html');
     cur = g.db.cursor()
     status = request.form['status']
     time = request.form['time']
