@@ -1,6 +1,7 @@
 # - * - coding: UTF-8 - * -
 
 import math
+import signal
 
 from flask import request, session, g, \
         flash, redirect, url_for, render_template
@@ -43,6 +44,12 @@ def check_auth(cur, id):
     if not row:
         return redirect(url_for('list_plans'))
 
+def notify_daemon():
+    pid_file = open(app.config['PID_FILE'], 'r')
+    pid = int(pid_file.read())
+    pid_file.close()
+    os.kill(pid, signal.SIGUSR1)
+
 @app.route('/plan/new', methods=['GET', 'POST'])
 def new_plan():
     if request.method == 'GET':
@@ -66,7 +73,7 @@ def new_plan():
         """, (session['user_id'], status,
             time, period, priority, timeout))
     g.db.commit()
-    # TODO to notify daemon
+    notify_daemon()
 
     flash('添加成功', 'success')
     redirect_to_plans(time)
@@ -105,7 +112,7 @@ def edit_plan(plan_id):
         """, (plan_id, session['user_id'], status,
             time, period, priority, timeout))
     g.db.commit()
-    # TODO to notify daemon
+    notify_daemon()
 
     flash('修改成功', 'success')
     redirect_to_plans(time)

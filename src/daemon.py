@@ -214,9 +214,9 @@ if __name__ == '__main__':
         print 'Fanfou-ontime daemon has already been running'
         exit(1)
     # 创建 pidfile
-    f = open(PID_FILE, 'w')
-    f.write(str(os.getpid()))
-    f.close()
+    pid_file = open(PID_FILE, 'w')
+    pid_file.write(str(os.getpid()))
+    pid_file.close()
     # 初始化数据
     consumer = oauth.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
     # 创建队列和条件锁
