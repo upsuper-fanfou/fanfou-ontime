@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # - * - coding: UTF-8 - * -
 
+import os
 import sys
 import json
 import Queue
@@ -10,6 +11,7 @@ import threading
 
 import oauth2 as oauth
 
+from os import path
 from math import floor
 from urllib import urlencode
 from datetime import datetime, timedelta
@@ -208,6 +210,14 @@ def clean_plans_flag():
     db.close()
 
 if __name__ == '__main__':
+    if path.exists(PID_FILE):
+        print 'Fanfou-ontime daemon has already been running'
+        exit(1)
+    # 创建 pidfile
+    f = open(PID_FILE, 'w')
+    f.write(str(os.getpid()))
+    f.close()
+    # 初始化数据
     consumer = oauth.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
     # 创建队列和条件锁
     plan_queue = Queue.PriorityQueue()
@@ -247,4 +257,5 @@ if __name__ == '__main__':
         thread.join()
     # 结束
     clean_plans_flag()
+    os.unlink(PID_FILE)
     raise e
