@@ -15,7 +15,7 @@ RESULT_OTHER = -1
 @app.route('/log/result.<result>/p.<int:page>')
 def list_logs(page=1, result=None):
     cond = ''
-    if 'result' is not None:
+    if result is not None:
         if result not in result_str:
             return redirect(url_for('list_logs'))
         else:
