@@ -1,0 +1,49 @@
+{%- set nav_sidebar = [
+        (url_for('new_plan'), 'new_plan', '添加新的计划'),
+        (url_for('list_plans'), 'list_plans', '进行中的计划'),
+        (url_for('list_logs'), 'list_logs', '发送记录'),
+        ] -%}
+{%- set current_page = current_page|default('') -%}
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+    {% block head %}
+	<meta charset="UTF-8" />
+    <title>按时吃饭 - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" media="screen" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    {% endblock %}
+</head>
+<body>
+    <div id="container">
+        <div id="header">
+            <h1>按时吃饭</h1>
+            <div id="user">
+                <a href="http://fanfou.com/{{ session.user_id|escape }}" title="{{ session.user_id|escape }}"><img src="{{ session.user_image|escape }}" alt="{{ session.user_name|escape }}" /></a>
+                <h2><a href="http://fanfou.com/{{ session.user_id| escape }}" title="{{ session.user_id|escape }}">{{ session.user_name|escape }}</a></h2>
+                <p><a href="{{ url_for('auth') }}">重新登入</a></p>
+            </div>
+        </div>
+        <div id="main">
+            <div id="content">{% block content %}{% endblock %}</div>
+            <div id="sidebar">
+                <ul>
+                    {% for href, id, caption in nav_sidebar %}
+                    <li><a href="{{ href|e }}" id="{{ id|e }}"{% if id == current_page %} class="current"{% endif %}>{{ caption|e }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div id="tip">
+            <p><strong>按时吃饭</strong>是一个帮助您<strong>定时发送饭否消息</strong>的工具。<br/>自觉爱护饭否环境，请不要使用按时吃饭进行可能导致刷屏等垃圾信息的行为。</p>
+            <a href="http://fanfou.com/ontime" target="_blank"><span class="text"><strong>按时吃饭</strong>官方饭否账号</span><span class="icon"></span></a>
+        </div>
+        <div id="footer">
+            &copy; 2011 @<a href="http://fanfou.com/xidorn" target="_blank">Xidorn</a>.
+            Designed by @<a href="http://fanfou.com/anegie" target="_blank">Kevin</a>.
+            Some rights reserved.
+        </div>
+    </div>
+</body>
+</html>

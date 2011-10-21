@@ -1,6 +1,7 @@
 # - * - coding: UTF-8 - * -
 
-from flask import g, redirect, url_for, session
+from os import path
+from flask import g, redirect, url_for, session, send_from_directory
 
 from ontime import app
 
@@ -15,3 +16,8 @@ def index():
         return redirect(url_for('new_plan'))
     else:
         return redirect(url_for('list_plans'))
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(path.join(app.root_path, 'static'),
+            'favicon.ico', mimetype='image/vnd.microsoft.icon')

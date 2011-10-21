@@ -1,0 +1,147 @@
+@import "reset.css";
+
+html {
+    overflow-y: scroll;
+}
+body {
+    color: #555; background: #fff url(images/bg.png) repeat;
+    font: 400 14px/1.5 "Lucida Grande", "HelveticaNeue-Light",
+        "Helvetica Neue Light", Helvetica, Tahoma, "Hiragino Sans GB",
+        "Microsoft Yahei", "Wenquanyi MicroHei", sans-serif;
+}
+::selection {
+    color: rgba(255, 255, 255, .75);
+    background: rgba(0, 0, 0, .5);
+    text-shadow: none;
+}
+::-moz-selection {
+    color: rgba(255, 255, 255, .75);
+    background: rgba(0, 0, 0, .5);
+    text-shadow: none;
+}
+a {
+    color: #555;
+    text-decoration: none;
+}
+a:hover, a:active {
+    color: #06c;
+    outline: none;
+}
+
+#container {
+    width: 760px;
+    margin: 20px auto;
+    text-align: left;
+    position: relative;
+}
+
+#header { height: 83px; margin-bottom: 20px; }
+#header h1 {
+    text-indent: -900em;
+    background: url(images/logo.png) no-repeat;
+    width: 348px; height: 78px;
+}
+#user {
+    position: absolute;
+    top: 10px; right: 0; width: 173px;
+    background: #fff;
+    border: 1px solid #b5b5b5;
+    border-radius: 5px;
+    padding: 10px 10px 0; 
+}
+#user img { float: left; margin: 0 10px 10px 0; border-radius: 3px; }
+#user h2 { font-size: 18px; margin-bottom: 4px; }
+#user p { font-size: 12px; }
+
+#main {
+    border: 1px solid #b5b5b5;
+    background: #fff;
+    padding: 15px 209px 15px 15px;
+    position: relative;
+    min-height: 180px;
+    border-radius: 5px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .25);
+}
+#sidebar {
+    position: absolute;
+    top: 0; right: 0;
+    height: 100%;
+    width: 192px;
+    border-left: 1px solid #b5b5b5;
+}
+#sidebar ul {
+    margin: 10px 0;
+}
+#sidebar a {
+    display: block;
+    padding-left: 40px;
+    color: #555;
+    line-height: 45px;
+    width: 152px;
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+}
+#sidebar a:hover {
+    background-color: #f8f8f8;
+}
+#sidebar a.current {
+    border-top: 1px solid #b5b5b5;
+    border-bottom: 1px solid #b5b5b5;
+    background-color: #f8f8f8;
+    font-weight: bold;
+}
+
+#tip {
+    margin-top: 20px;
+    background: #fff;
+    border: 1px solid #b5b5b5;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .25);
+    border-radius: 5px;
+    padding: 10px 208px 10px 15px;
+    position: relative;
+    height: 42px;
+}
+#tip a {
+    position: absolute;
+    display: block;
+    width: 177px; height: 100%;
+    border-left: 1px solid #b5b5b5;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    top: 0; right: 0;
+    line-height: 62px;
+    padding-left: 15px;
+    background: #f8f8f8;
+    color: #555;
+    background-image: -webkit-linear-gradient(top, rgba(248, 248, 248, 1), rgba(238, 238, 238, 1));
+    background-image:    -moz-linear-gradient(top, rgba(248, 248, 248, 1), rgba(238, 238, 238, 1));
+    background-image:     -ms-linear-gradient(top, rgba(248, 248, 248, 1), rgba(238, 238, 238, 1));
+    background-image:      -o-linear-gradient(top, rgba(248, 248, 248, 1), rgba(238, 238, 238, 1));
+}
+#tip a span.text { border-bottom: 1px solid #999; }
+#tip a span.icon {
+    background: url(images/small-arrow.png) no-repeat right top;
+    text-indent: -900em;
+    padding: 0 10px;
+}
+#tip a:hover {
+    background: #eee;
+    background-image: -webkit-linear-gradient(top, rgba(238, 238, 238, 1), rgba(228, 228, 228, 1));
+    background-image:    -moz-linear-gradient(top, rgba(238, 238, 238, 1), rgba(228, 228, 228, 1));
+    background-image:     -ms-linear-gradient(top, rgba(238, 238, 238, 1), rgba(228, 228, 228, 1));
+    background-image:      -o-linear-gradient(top, rgba(238, 238, 238, 1), rgba(228, 228, 228, 1));
+}
+#tip a:active {
+    background-image: -webkit-linear-gradient(top, rgba(228, 228, 228, 1), rgba(238, 238, 238, 1));
+    background-image:    -moz-linear-gradient(top, rgba(228, 228, 228, 1), rgba(238, 238, 238, 1));
+    background-image:     -ms-linear-gradient(top, rgba(228, 228, 228, 1), rgba(238, 238, 238, 1));
+    background-image:      -o-linear-gradient(top, rgba(228, 228, 228, 1), rgba(238, 238, 238, 1));
+}
+
+#footer {
+    margin: 20px auto;
+    text-shadow: 0 1px 1 rgba(255, 255, 255, .75);
+}
+#footer a {
+    border-bottom: 1px solid #999;
+}
