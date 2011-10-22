@@ -17,8 +17,6 @@ from urllib import urlencode
 from datetime import datetime, timedelta
 from collections import namedtuple
 
-from config import *
-
 Plan = namedtuple('Plan',
         ['id', 'user_id', 'status', 'time',
             'period', 'priority', 'timeout',
@@ -210,6 +208,10 @@ def clean_plans_flag():
     db.close()
 
 if __name__ == '__main__':
+    config_file = os.environ['ONTIME_SETTINGS']
+    # 读取配置文件
+    execfile(config_file)
+    # 判断 pidfile
     if path.exists(PID_FILE):
         print 'Fanfou-ontime daemon has already been running'
         exit(1)
