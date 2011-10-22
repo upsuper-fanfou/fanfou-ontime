@@ -80,6 +80,7 @@ a:hover, a:active {
     width: 152px;
     border-top: 1px solid #fff;
     border-bottom: 1px solid #fff;
+    background: url(images/iconset.png) no-repeat;
 }
 #sidebar a:hover {
     background-color: #f8f8f8;
@@ -90,6 +91,9 @@ a:hover, a:active {
     background-color: #f8f8f8;
     font-weight: bold;
 }
+#sidebar a#new_plan { background-position: -2px 0; }
+#sidebar a#list_plans { background-position: -2px -45px; }
+#sidebar a#list_logs { background-position: -2px -90px; }
 
 #tip {
     margin-top: 20px;
