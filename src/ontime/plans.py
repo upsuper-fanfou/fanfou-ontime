@@ -15,6 +15,11 @@ PER_PAGE = app.config['PLANS_PER_PAGE']
 @app.route('/plan/p.<int:page>')
 def list_plans(page=1):
     cur = g.db.cursor()
+    user_id = session['user_id']
+    cur.execute("""
+        SELECT COUNT(`id`) c FROM `plans` WHERE `user_id`=%s
+        """, (user_id, ))
+    count = cur.fetchone()['c']
     cur.execute("""
         SELECT `id`, `status`, `time`, `period`, `priority`, `timeout`
         FROM `plans` WHERE `user_id`=%s
@@ -22,15 +27,15 @@ def list_plans(page=1):
         LIMIT %s, %s
         """, (session['user_id'], PER_PAGE * (page - 1), PER_PAGE))
     plans = cur.fetchall()
-    return render_template('plans.html', plans=plans)
+    return render_template('plans.html', plans=plans, count=count)
 
 def redirect_to_plans(time):
-    cur = g.db.commit()
+    cur = g.db.cursor()
     cur.execute("""
-        SELECT COUNT(*) FROM `plans`
+        SELECT COUNT(*) c FROM `plans`
         WHERE `user_id`=%s AND `time`<=%s
         """, (session['user_id'], time))
-    count = float(cur.fetchone()[0])
+    count = float(cur.fetchone()['c'])
     page = math.ceil(count / PER_PAGE)
     return redirect(url_for('list_plans', page=page))
 

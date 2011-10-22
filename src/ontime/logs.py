@@ -27,10 +27,7 @@ def list_logs(page=1, result=None):
         FROM `logs` WHERE `user_id`=%%s %s LIMIT %d, %d
         """ % (cond, (page - 1) * per_page, per_page),
         session['user_id'])
-    logs = []
-    for row in cur:
-        logs.append(dict(zip(
-            ('id', 'status', 'plan_time', 'exec_time', 'result'), row)))
+    logs = cur.fetchall()
     return render_template('logs.html', logs=logs)
 
 result_str = { }

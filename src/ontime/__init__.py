@@ -1,6 +1,7 @@
 # - * - coding: UTF-8 - * -
 
 import MySQLdb
+import MySQLdb.cursors
 
 from flask import Flask, g
 
@@ -14,7 +15,8 @@ def connect_db():
             app.config['DB_HOSTNAME'],
             app.config['DB_USERNAME'],
             app.config['DB_PASSWORD'],
-            app.config['DB_DATABASE']
+            app.config['DB_DATABASE'],
+            cursorclass=MySQLdb.cursors.DictCursor
             )
 
 @app.before_request

@@ -33,7 +33,7 @@ def before_request():
             WHERE `user_id`=%s
             """, (user_id, ))
         access_token = cur.fetchone()
-        token = oauth.Token(access_token[0], access_token[1])
+        token = oauth.Token(access_token['token'], access_token['secret'])
         g.client = oauth.Client(consumer, token)
 
 @app.route('/auth')
