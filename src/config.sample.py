@@ -1,5 +1,7 @@
 # - * - coding: UTF-8 - * -
 
+DEBUG = False
+
 DB_HOSTNAME = 'localhost'
 DB_USERNAME = ''
 DB_PASSWORD = ''

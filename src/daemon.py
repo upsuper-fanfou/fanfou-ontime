@@ -6,6 +6,7 @@ import sys
 import json
 import Queue
 import signal
+import logging
 import MySQLdb
 import threading
 
@@ -30,7 +31,7 @@ def connect_db():
     return db
 
 def refresh_queue():
-    print 'refreshing...'
+    logging.debug('Refreshing feeding queue')
     refresh_cond.acquire()
     refresh_cond.notify()
     refresh_cond.release()
@@ -47,7 +48,7 @@ class FeedingThread(threading.Thread):
         refresh_cond.release()
     
     def mainloop(self):
-        print 'waked'
+        logging.debug('FeedingThread is waked')
         if not running:
             return False
         # 将即将发送的计划推入队列
@@ -108,7 +109,7 @@ class SendingThread(threading.Thread):
         if time + timedelta(minutes=timeout) < now:
             result = 'timeout'
         else:
-            print 'sending...'
+            logging.debug('Posting status')
             token = oauth.Token(plan.token, plan.secret)
             self._client.token = token
             # 发送
@@ -160,7 +161,7 @@ class WritingThread(threading.Thread):
             """, (plan_id, ))
         plan = Plan(*cur.fetchone())
         # 添加发送记录
-        print 'writing...'
+        logging.debug('Writing Log')
         cur.execute("""
             INSERT INTO `logs`
             (`user_id`, `status`, `plan_time`, `exec_time`, `result`)
@@ -194,7 +195,7 @@ class WritingThread(threading.Thread):
 def signal_handler(signum, frame):
     if signum == signal.SIGUSR1:
         refresh_queue()
-    elif signum == signal.SIGTERM:
+    elif signum == signal.SIGTERM or signum == signal.SIGINT:
         sys.exit()
 
 def clean_plans_flag():
@@ -229,6 +230,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGUSR1, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGHUP, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler)
     # 清理数据库中的数据
     clean_plans_flag()
     # 初始化线程
@@ -249,7 +251,7 @@ if __name__ == '__main__':
         except SystemExit, e:
             break
     # 消除运行标签并等待线程结束
-    print 'exiting...'
+    logging.debug('Exiting daemon')
     running = False
     refresh_queue()
     for i in range(THREAD_AMOUNT):

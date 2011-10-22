@@ -2,4 +2,4 @@
 # - * - coding: UTF-8 - * -
 
 from ontime import app
-app.run(debug=True)
+app.run()
