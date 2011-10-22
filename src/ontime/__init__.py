@@ -16,6 +16,7 @@ def connect_db():
             app.config['DB_USERNAME'],
             app.config['DB_PASSWORD'],
             app.config['DB_DATABASE'],
+            charset='utf8',
             cursorclass=MySQLdb.cursors.DictCursor
             )
 

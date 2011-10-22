@@ -149,3 +149,21 @@ a:hover, a:active {
 #footer a {
     border-bottom: 1px solid #999;
 }
+
+#title { margin-bottom: 5px; position: relative; }
+#title h2 { font-size: 18px; }
+#title span { position: absolute; right: 0; top: 0; }
+#title span strong { font: 800 20px/1.5 Georgia, Times, serif; margin: 0 .22em; }
+#plans { border-top: 1px solid #eee; }
+#plans li { border-bottom: 1px solid #eee; padding: 10px; }
+#plans li:hover { background: #f8f8f8; }
+#plans li .info { color: #06c; font-size: 12px; display: block; margin-top: 3px; }
+#plans li .info a { color: #06c; font-weight: bold; }
+#plans li .info a:hover { border-bottom: 1px dotted; }
+
+.paginator { padding: 20px 0 10px; text-align: right; }
+.paginator li { display: inline; margin: 0 1px; }
+.paginator li a { border: 1px solid #ccc; border-radius: 3px; padding: 8px 11px; }
+.paginator li a:hover { color: #fff; background: #ccc; }
+.paginator li.current { font-weight: bold; }
+.paginator li.current a { background: #ccc; color: #fff; }

@@ -1,5 +1,37 @@
 {% extends "layout.html" %}
 {% set current_page = 'list_plans' %}
+{% block title %}进行中的计划{% endblock %}
 {% block content %}
-<h2>进行中的计划</h2>
+<div id="title">
+    <h2>进行中的计划</h2>
+    <span>共<strong>{{ count }}</strong>项</span>
+</div>
+<ul id="plans">
+    {% for plan in plans %}
+    <li>
+        <p>{{ plan.status|e }}</p>
+        <span class="info">
+            将于 <span class="time">{{ plan.time }}</span>
+            {% if plan.period %}以及接下来
+                {% if plan.period is divisibleby(10080) %}
+                每{{ plan.period / 10080 }}周
+                {% elif plan.period is divisibleby(1440) %}
+                每{{ plan.period / 1440 }}天
+                {% elif plan.period is divisibleby(60) %}
+                每{{ plan.period / 60 }}小时
+                {% else %}
+                每{{ plan.period }}分钟
+                {% endif %}
+            {% endif %}
+            发送 |
+            <a href="#">编辑</a> |
+            <a href="#">删除</a>
+        </span>
+    </li>
+    {% endfor %}
+</ul>
+{% from 'widgets.html' import pagebar %}
+{%- set cur_page = request.view_args.page|default(1) -%}
+{%- set total_page = (count / config['PLANS_PER_PAGE'])|round(0, 'ceil')|int -%}
+{{ pagebar(cur_page, total_page) }}
 {% endblock %}
