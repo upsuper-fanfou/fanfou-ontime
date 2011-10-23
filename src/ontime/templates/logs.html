@@ -1,2 +1,33 @@
 {% extends "layout.html" %}
 {% set current_page = 'list_logs' %}
+{% block title %}发送记录{% endblock %}
+{% block content %}
+<div id="title">
+    <h2>发送记录</h2>
+    <span>共<strong>{{ count }}</strong>项</span>
+</div>
+<ul id="stream">
+    {% for log in logs %}
+    <li>
+        <p>{{ log.status|e }}</p>
+        <span class="info {{ log.result }}">
+            {% if log.result == 'success' %}
+            于 <span class="time" time="{{ log.exec_time }}"></span> 发送成功
+            {% elif log.result == 'accepted' %}
+            于 <span class="time" time="{{ log.exec_time }}"></span> 发送
+            {% elif log.result == 'timeout' %}
+            发送超时
+            {% elif log.result == 'unauthorized' %}
+            发送错误：未能通过身份认证
+            {% elif log.result == 'other' %}
+            由于未知原因，可能没有发送成功
+            {% endif %}
+        </span>
+    </li>
+    {% endfor %}
+</ul>
+{% from 'widgets.html' import pagebar %}
+{%- set cur_page = request.view_args.page|default(1) -%}
+{%- set total_page = (count / config['LOGS_PER_PAGE'])|round(0, 'ceil')|int -%}
+{{ pagebar(cur_page, total_page) }}
+{% endblock %}

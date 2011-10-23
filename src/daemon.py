@@ -212,6 +212,8 @@ if __name__ == '__main__':
     config_file = os.environ['ONTIME_SETTINGS']
     # 读取配置文件
     execfile(config_file)
+    if DEBUG:
+        logging.basicConfig(level=logging.DEBUG)
     # 判断 pidfile
     if path.exists(PID_FILE):
         print 'Fanfou-ontime daemon has already been running'

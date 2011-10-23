@@ -6,12 +6,12 @@
     <h2>进行中的计划</h2>
     <span>共<strong>{{ count }}</strong>项</span>
 </div>
-<ul id="plans">
+<ul id="stream">
     {% for plan in plans %}
     <li>
         <p>{{ plan.status|e }}</p>
         <span class="info">
-            将于 <span class="time">{{ plan.time }}</span>
+            将于 <span class="time" time="{{ plan.time }}"></span>
             {% if plan.period %}以及接下来
                 {% if plan.period is divisibleby(10080) %}
                 每{{ plan.period / 10080 }}周

@@ -154,12 +154,17 @@ a:hover, a:active {
 #title h2 { font-size: 18px; }
 #title span { position: absolute; right: 0; top: 0; }
 #title span strong { font: 800 20px/1.5 Georgia, Times, serif; margin: 0 .22em; }
-#plans { border-top: 1px solid #eee; }
-#plans li { border-bottom: 1px solid #eee; padding: 10px; }
-#plans li:hover { background: #f8f8f8; }
-#plans li .info { color: #06c; font-size: 12px; display: block; margin-top: 3px; }
-#plans li .info a { color: #06c; font-weight: bold; }
-#plans li .info a:hover { border-bottom: 1px dotted; }
+#stream { border-top: 1px solid #eee; }
+#stream li { border-bottom: 1px solid #eee; padding: 10px; }
+#stream li:hover { background: #f8f8f8; }
+#stream li .info { color: #06c; font-size: 12px; display: block; margin-top: 3px; }
+#stream li .info a { color: #06c; font-weight: bold; }
+#stream li .info a:hover { border-bottom: 1px dotted; }
+#stream li .info.success { color: #999; }
+#stream li .info.accepted { color: #999; }
+#stream li .info.timeout { color: #c00; }
+#stream li .info.unauthorized { color: #c00; }
+#stream li .info.other { color: #c00; }
 
 .paginator { padding: 20px 0 10px; text-align: right; }
 .paginator li { display: inline; margin: 0 1px; }
