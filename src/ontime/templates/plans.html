@@ -3,7 +3,7 @@
 {% block title %}进行中的计划{% endblock %}
 {% block content %}
 <div id="title">
-    <h2>进行中的计划</h2>
+    <h2>{{ self.title() }}</h2>
     <span>共<strong>{{ count }}</strong>项</span>
 </div>
 <ul id="stream">
@@ -31,7 +31,6 @@
     {% endfor %}
 </ul>
 {% from 'widgets.html' import pagebar %}
-{%- set cur_page = request.view_args.page|default(1) -%}
 {%- set total_page = (count / config['PLANS_PER_PAGE'])|round(0, 'ceil')|int -%}
-{{ pagebar(cur_page, total_page) }}
+{{ pagebar('list_plans', request.view_args, total_page) }}
 {% endblock %}

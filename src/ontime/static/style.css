@@ -152,6 +152,7 @@ a:hover, a:active {
 
 #title { margin-bottom: 5px; position: relative; }
 #title h2 { font-size: 18px; }
+#title a { display: block; margin: -1.5em 0 0 10em; font-size: 12px; width: 3em; }
 #title span { position: absolute; right: 0; top: 0; }
 #title span strong { font: 800 20px/1.5 Georgia, Times, serif; margin: 0 .22em; }
 #stream { border-top: 1px solid #eee; }
@@ -165,6 +166,9 @@ a:hover, a:active {
 #stream li .info.timeout { color: #c00; }
 #stream li .info.unauthorized { color: #c00; }
 #stream li .info.other { color: #c00; }
+
+#stream li.log span a { font-weight: normal; color: inherit; }
+#stream li.log span.time { float: right; color: #ccc; }
 
 .paginator { padding: 20px 0 10px; text-align: right; }
 .paginator li { display: inline; margin: 0 1px; }

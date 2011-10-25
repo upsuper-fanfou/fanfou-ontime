@@ -164,10 +164,10 @@ class WritingThread(threading.Thread):
         logging.debug('Writing Log')
         cur.execute("""
             INSERT INTO `logs`
-            (`user_id`, `status`, `plan_time`, `exec_time`, `result`)
-            VALUES (%s, %s, %s, %s, %s)
+            (`user_id`, `status`, `token`, `plan_time`, `exec_time`, `result`)
+            VALUES (%s, %s, UNHEX(MD5(%s)), %s, %s, %s)
             """,
-            (plan.user_id, status, plan.time, time, result))
+            (plan.user_id, status, plan.status, plan.time, time, result))
         # 判断是否为周期计划
         if not plan.period:
             cur.execute("DELETE FROM `plans` WHERE `id`=%s", (plan_id, ))

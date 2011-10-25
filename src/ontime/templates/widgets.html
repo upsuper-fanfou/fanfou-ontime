@@ -1,14 +1,16 @@
-{%- macro pagebar(cur, total) -%}
+{%- macro pagebar(view, kwargs, total) -%}
+    {%- set cur = kwargs.page|default(1) -%}
+    {%- set args = kwargs|remove_page -%}
     {% if total != 1 %}
     <ol class="paginator">
         {%- if cur != 1 %}
-        <li><a href="{{ url_for('list_plans', page=cur - 1) }}">上一页</a></li>
+        <li><a href="{{ url_for(view, page=cur - 1, **args) }}">上一页</a></li>
         {%- endif -%}
         {%- for i in range(1, total + 1) %}
-        <li{% if cur == i %} class="current"{% endif %}><a href="{{ url_for('list_plans', page=i) }}">{{ i }}</a></li>
+        <li{% if cur == i %} class="current"{% endif %}><a href="{{ url_for(view, page=i, **args) }}">{{ i }}</a></li>
         {%- endfor -%}
         {%- if cur != total %}
-        <li><a href="{{ url_for('list_plans', page=cur + 1) }}">下一页</a></li>
+        <li><a href="{{ url_for(view, page=cur + 1, **args) }}">下一页</a></li>
         {%- endif %}
     </ol>
     {% endif %}

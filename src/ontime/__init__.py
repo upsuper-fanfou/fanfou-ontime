@@ -3,6 +3,7 @@
 import MySQLdb
 import MySQLdb.cursors
 
+from copy import copy
 from flask import Flask, g
 
 app = Flask(__name__)
@@ -28,6 +29,14 @@ def before_request():
 @app.teardown_request
 def teardown_request(exception):
     g.db.close()
+
+@app.template_filter('remove_page')
+def remove_page(args):
+    if 'page' in args:
+        ret = copy(args)
+        del ret['page']
+        return ret
+    return args
 
 import ontime.index
 import ontime.auth
