@@ -1,7 +1,7 @@
 {%- macro pagebar(view, kwargs, total) -%}
     {%- set cur = kwargs.page|default(1) -%}
     {%- set args = kwargs|remove_page -%}
-    {% if total != 1 %}
+    {% if total > 1 %}
     <ol class="paginator">
         {%- if cur != 1 %}
         <li><a href="{{ url_for(view, page=cur - 1, **args) }}">上一页</a></li>
