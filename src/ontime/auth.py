@@ -1,7 +1,9 @@
 # - * - coding: UTF-8 - * -
 
+import os
 import json
 import urllib
+import hashlib
 import urlparse
 
 import oauth2 as oauth
@@ -88,4 +90,5 @@ def callback():
     session['user_id'] = user_id
     session['user_name'] = user_name
     session['user_image'] = user_image
+    session['post_token'] = hashlib.md5(os.urandom(20)).hexdigest()[:8]
     return render_template('callback.js')

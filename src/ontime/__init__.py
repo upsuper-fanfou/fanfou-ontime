@@ -4,7 +4,7 @@ import MySQLdb
 import MySQLdb.cursors
 
 from copy import copy
-from flask import Flask, g
+from flask import Flask, g, session, request, abort
 
 app = Flask(__name__)
 app.config.from_envvar('ONTIME_SETTINGS')
@@ -23,12 +23,18 @@ def connect_db():
 
 @app.before_request
 def before_request():
+    g.db = None
+    if request.method == 'POST' and \
+            request.form['token'] != session['post_token']:
+        return '%s %s' % (request.form['token'], session['post_token'])
+        abort(400)
     g.db = connect_db()
     g.db.autocommit(False)
 
 @app.teardown_request
 def teardown_request(exception):
-    g.db.close()
+    if g.db:
+        g.db.close()
 
 @app.template_filter('remove_page')
 def remove_page(args):

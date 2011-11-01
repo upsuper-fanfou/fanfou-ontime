@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
 {% set current_page = 'list_plans' %}
 {% block title %}进行中的计划{% endblock %}
+{% block head %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='plans.js') }}"></script>
+{% endblock %}
 {% block content %}
 <div id="title">
     <h2>{{ self.title() }}</h2>
@@ -8,7 +12,7 @@
 </div>
 <ul id="stream">
     {% for plan in plans %}
-    <li>
+    <li id="plan_{{ plan.id }}" plan_id="{{ plan.id }}">
         <p>{{ plan.status|e }}</p>
         <span class="info">
             将于 <span class="time" time="{{ plan.time }}"></span>
@@ -24,12 +28,16 @@
                 {% endif %}
             {% endif %}
             发送 |
-            <a href="#">编辑</a> |
-            <a href="#">删除</a>
+            <a href="#" class="edit">编辑</a> |
+            <a href="#" class="delete">删除</a>
         </span>
     </li>
     {% endfor %}
 </ul>
+<form action="{{ url_for('delete_plan') }}" method="POST" id="form_delete">
+    <input type="hidden" name="id" />
+    <input type="hidden" name="token" value="{{ session.post_token }}" />
+</form>
 {% from 'widgets.html' import pagebar %}
 {%- set total_page = (count / config['PLANS_PER_PAGE'])|round(0, 'ceil')|int -%}
 {{ pagebar('list_plans', request.view_args, total_page) }}

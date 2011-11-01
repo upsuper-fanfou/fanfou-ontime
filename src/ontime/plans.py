@@ -1,5 +1,6 @@
 # - * - coding: UTF-8 - * -
 
+import os
 import math
 import signal
 
@@ -14,6 +15,8 @@ PER_PAGE = app.config['PLANS_PER_PAGE']
 @app.route('/plan')
 @app.route('/plan/p.<int:page>')
 def list_plans(page=1):
+    if page < 1:
+        return redirect(url_for('list_plans'))
     cur = g.db.cursor()
     user_id = session['user_id']
     cur.execute("""
@@ -39,15 +42,14 @@ def redirect_to_plans(time):
     page = math.ceil(count / PER_PAGE)
     return redirect(url_for('list_plans', page=page))
 
-def check_auth(cur, id):
+def is_authed(cur, plan_id):
     cur.execute("""
         SELECT `time` FROM `plans`
-        WHERE `id`=%d AND `user_id`=%s
+        WHERE `id`=%s AND `user_id`=%s
         FOR UPDATE
         """, (plan_id, session['user_id']))
     row = cur.fetchone()
-    if not row:
-        return redirect(url_for('list_plans'))
+    return bool(row)
 
 def notify_daemon():
     pid_file = open(app.config['PID_FILE'], 'r')
@@ -61,8 +63,9 @@ def new_plan():
         return render_template('new_plan.html');
     cur = g.db.cursor()
     status = request.form['status']
+    date = request.form['date']
     time = request.form['time']
-    time = datetime.strptime(time, '%Y-%m-%d %H:%M')
+    time = datetime.strptime('%s %s' % (date, time), '%Y-%m-%d %H:%M')
     period = int(request.form['period'])
     priority = int(request.form['priority'])
     if priority < -10:
@@ -74,30 +77,39 @@ def new_plan():
     cur.execute("""
         INSERT INTO `plans`
         (`user_id`, `status`, `time`, `period`, `priority`, `timeout`)
-        VALUE (%s, %s, %s, %d, %d, %d)
+        VALUE (%s, %s, %s, %s, %s, %s)
         """, (session['user_id'], status,
             time, period, priority, timeout))
     g.db.commit()
     notify_daemon()
 
     flash('添加成功', 'success')
-    redirect_to_plans(time)
+    return redirect_to_plans(time)
 
-@app.route('/plan/<int:plan_id>/delete', methods=['POST'])
-def delete_plan(plan_id):
+@app.route('/plan/delete', methods=['POST'])
+def delete_plan():
+    plan_id = int(request.form['id'])
     cur = g.db.cursor()
-    check_auth(cur, plan_id)
+    if not is_authed(cur, plan_id):
+        return redirect(url_for('list_plans'))
 
-    cur.execute("DELETE FROM `plans` WHERE `id`=%d", (plan_id, ))
+    cur.execute("""
+        SELECT `time` FROM `plans`
+        WHERE `id`=%s FOR UPDATE
+        """, (plan_id, ))
+    time = cur.fetchone()['time']
+    cur.execute("DELETE FROM `plans` WHERE `id`=%s", (plan_id, ))
     g.db.commit()
     
     flash('删除成功', 'success')
-    redirect_to_plans(time)
+    return redirect_to_plans(time)
 
-@app.route('/plan/<int:plan_id>/edit', methods=['POST'])
-def edit_plan(plan_id):
+@app.route('/plan/edit', methods=['POST'])
+def edit_plan():
+    plan_id = int(request.form['id'])
     cur = g.db.cursor()
-    check_auth(cur, plan_id)
+    if not is_authed(cur, plan_id):
+        return redirect(url_for('list_plans'))
 
     status = request.form['status']
     time = request.form['time']
@@ -113,11 +125,11 @@ def edit_plan(plan_id):
     cur.execute("""
         REPLACE INTO `plans`
         (`id`, `user_id`, `status`, `time`, `period`, `priority`, `timeout`)
-        VALUE (%d, %s, %s, %s, %d, %d, %d)
+        VALUE (%s, %s, %s, %s, %s, %s, %s)
         """, (plan_id, session['user_id'], status,
             time, period, priority, timeout))
     g.db.commit()
     notify_daemon()
 
     flash('修改成功', 'success')
-    redirect_to_plans(time)
+    return redirect_to_plans(time)
