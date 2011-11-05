@@ -12,7 +12,8 @@
     <title>按时吃饭 - {% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" media="screen" />
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
-    <script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='libs/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='common.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
     {% endblock %}
 </head>

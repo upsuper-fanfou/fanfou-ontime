@@ -2,8 +2,8 @@
 {% set current_page = 'list_plans' %}
 {% block title %}进行中的计划{% endblock %}
 {% block head %}
-{{ super() }}
-<script type="text/javascript" src="{{ url_for('static', filename='plans.js') }}"></script>
+    {{ super() }}
+    <script type="text/javascript" src="{{ url_for('static', filename='plans.js') }}"></script>
 {% endblock %}
 {% block content %}
 <div id="title">
