@@ -6,7 +6,7 @@ import signal
 
 from flask import request, session, g, \
         flash, redirect, url_for, render_template
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from ontime import app
 
@@ -66,6 +66,8 @@ def new_plan():
     date = request.form['date']
     time = request.form['time']
     time = datetime.strptime('%s %s' % (date, time), '%Y-%m-%d %H:%M')
+    timezone = int(request.form['timezone'])
+    time -= timedelta(minutes=timezone)
     period = int(request.form['period'])
     priority = int(request.form['priority'])
     if priority < -10:
@@ -74,16 +76,17 @@ def new_plan():
         priority = 10
     timeout = int(request.form['timeout'])
 
-    cur.execute("""
-        INSERT INTO `plans`
-        (`user_id`, `status`, `time`, `period`, `priority`, `timeout`)
-        VALUE (%s, %s, %s, %s, %s, %s)
-        """, (session['user_id'], status,
-            time, period, priority, timeout))
-    g.db.commit()
-    notify_daemon()
+    if status:
+        cur.execute("""
+            INSERT INTO `plans`
+            (`user_id`, `status`, `time`, `period`, `priority`, `timeout`)
+            VALUE (%s, %s, %s, %s, %s, %s)
+            """, (session['user_id'], status,
+                time, period, priority, timeout))
+        g.db.commit()
+        notify_daemon()
+        flash('添加成功', 'success')
 
-    flash('添加成功', 'success')
     return redirect_to_plans(time)
 
 @app.route('/plan/delete', methods=['POST'])
