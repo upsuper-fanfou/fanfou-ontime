@@ -46,6 +46,10 @@ class FeedingThread(threading.Thread):
     
     def run(self):
         refresh_cond.acquire()
+        utcnow = datetime.utcnow()
+        wake_up = utcnow.replace(minute=utcnow.minute + 1,
+                second=0, microsecond=0)
+        refresh_cond.wait((wake_up - utcnow).total_seconds())
         while self.mainloop():
             pass
         refresh_cond.release()
@@ -53,7 +57,7 @@ class FeedingThread(threading.Thread):
     def _add_to_queue(self, plan, limit):
         enqueue = True
         utcnow = datetime.utcnow()
-        if limit and plan.time + timedelta(minutes=plan.timeout) < utcnow:
+        if limit and plan.time + timedelta(minutes=plan.timeout) > utcnow:
             num, span = [int(i) for i in limit.split('/')]
             span = timedelta(minutes=span)
             list_item = self._limit_list[plan.user_id]
@@ -231,6 +235,11 @@ def signal_handler(signum, frame):
         refresh_queue()
     elif signum == signal.SIGTERM or signum == signal.SIGINT:
         sys.exit()
+    elif DEBUG and signum == signal.SIGTRAP:
+        try:
+            execfile('debug.py')
+        except Exception, e:
+            print e
 
 def clean_plans_flag():
     db = connect_db()
@@ -267,6 +276,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGHUP, signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTRAP, signal_handler)
     # 清理数据库中的数据
     clean_plans_flag()
     # 初始化线程
