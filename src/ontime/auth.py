@@ -75,16 +75,26 @@ def callback():
     user_name = content['name']
     user_image = content['profile_image_url']
     
+    token = access_token['oauth_token']
+    secret = access_token['oauth_token_secret']
     cur = g.db.cursor()
     cur.execute("""
-        REPLACE INTO `users`
-        (`user_id`, `token`, `secret`)
-        VALUES (%s, %s, %s)
-        """, (
-            user_id,
-            access_token['oauth_token'],
-            access_token['oauth_token_secret']
-            ))
+        SELECT `token`, `secret` FROM `users`
+        WHERE `user_id`=%s FOR UPDATE
+        """, (user_id, ))
+    row = cur.fetchone()
+    if not row:
+        cur.execute("""
+            INSERT INTO `users`
+            (`user_id`, `token`, `secret`, `limit`)
+            VALUES (%s, %s, %s, %s)
+            """, (user_id, token, secret, app.config['DEFAULT_LIMIT']))
+    elif row['token'] != token or row['secret'] != secret:
+        cur.execute("""
+            UPDATE `users`
+            SET `token`=%s, `secret`=%s
+            WHERE `user_id`=%s
+            """, (token, secret, user_id))
     g.db.commit()
 
     session['user_id'] = user_id

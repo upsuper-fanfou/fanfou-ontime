@@ -23,3 +23,5 @@ LOGS_PER_PAGE = 20
 
 THREAD_AMOUNT = 10
 PID_FILE = '/var/run/fanfou_ontime.pid'
+
+DEFAULT_LIMIT = '3/10'

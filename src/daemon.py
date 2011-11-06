@@ -14,9 +14,10 @@ import oauth2 as oauth
 
 from os import path
 from math import floor
+from heapq import heappush, heappop
 from urllib import urlencode
 from datetime import datetime, timedelta
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 
 Plan = namedtuple('Plan',
         ['id', 'user_id', 'status', 'time',
@@ -39,6 +40,8 @@ def refresh_queue():
 class FeedingThread(threading.Thread):
     def __init__(self):
         self._db = connect_db()
+        self._limit_list = defaultdict(lambda: [datetime.utcnow(), 0])
+        self._wait_list = []
         super(FeedingThread, self).__init__()
     
     def run(self):
@@ -46,46 +49,77 @@ class FeedingThread(threading.Thread):
         while self.mainloop():
             pass
         refresh_cond.release()
+
+    def _add_to_queue(self, plan, limit):
+        enqueue = True
+        utcnow = datetime.utcnow()
+        if limit and plan.time + timedelta(minutes=plan.timeout) < utcnow:
+            num, span = [int(i) for i in limit.split('/')]
+            span = timedelta(minutes=span)
+            list_item = self._limit_list[plan.user_id]
+            if utcnow - list_item[0] >= span:
+                list_item[0] = utcnow
+                list_item[1] = 0
+            list_item[1] += 1
+            if list_item[1] > num:
+                enqueue = False
+                delay_to = list_item[0] + span
+        if enqueue:
+            plan_queue.put((plan.priority, plan.time, plan.timeout, plan))
+        else:
+            heappush(self._wait_list, (delay_to,
+                (plan.priority, plan.time, plan.timeout), plan, limit))
     
     def mainloop(self):
         logging.debug('FeedingThread is waked')
         if not running:
             return False
+        now = datetime.utcnow()
+        # 将延迟的项目推入队列
+        while self._wait_list and self._wait_list[0][0] <= now:
+            delay_to, for_order, plan, limit = heappop(self._wait_list)
+            self._add_to_queue(plan, limit)
         # 将即将发送的计划推入队列
         cur = self._db.cursor()
-        now = datetime.utcnow()
         cur.execute("""
             SELECT `id`, p.`user_id`, `status`, `time`,
                 `period`, `priority`, `timeout`, 
-                `token`, `secret`
+                `token`, `secret`, `limit`
             FROM `plans` p
             LEFT JOIN `users` u ON u.`user_id`=p.`user_id`
             WHERE `time`<=%s AND `in_queue`=0
             FOR UPDATE
             """, (now, ))
         for row in cur:
-            plan = Plan(*row)
-            plan_queue.put((plan.priority, plan.time, plan.timeout, plan))
+            limit = row[-1]
+            plan = Plan(*row[:-1])
+            self._add_to_queue(plan, limit)
         cur.execute("""
             UPDATE `plans`
             SET `in_queue`=1
             WHERE `time`<=%s AND `in_queue`=0
             """, (now, ))
         self._db.commit()
-        # 获取下一次唤醒的时间
+        # 计算下一个未入队计划的时间
+        utcnow = datetime.utcnow()
         cur.execute("""
             SELECT `time` FROM `plans`
             WHERE `time`>%s AND `in_queue`=0
             LIMIT 1
             """, (now, ))
         plan = cur.fetchone()
-        # 等待被唤醒
         if not plan:
-            refresh_cond.wait()
+            sleep_time = None
         else:
-            next_time = plan[0]
-            sleep_time = (next_time - datetime.utcnow()).total_seconds()
-            refresh_cond.wait(sleep_time)
+            sleep_time = (plan[0] - utcnow).total_seconds()
+        # 计算延时队列中项目的等待时间
+        if self._wait_list:
+            next_time = self._wait_list[0][0]
+            next_time = (next_time - utcnow).total_seconds()
+            if not sleep_time or sleep_time > next_time:
+                sleep_time = next_time
+        # 等待被唤醒
+        refresh_cond.wait(sleep_time)
         return True
 
 class SendingThread(threading.Thread):
