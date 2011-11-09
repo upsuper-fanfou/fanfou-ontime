@@ -52,7 +52,10 @@ def is_authed(cur, plan_id):
     return bool(row)
 
 def notify_daemon():
-    pid_file = open(app.config['PID_FILE'], 'r')
+    try:
+        pid_file = open(app.config['PID_FILE'], 'r')
+    except IOError:
+        return
     pid = int(pid_file.read())
     pid_file.close()
     os.kill(pid, signal.SIGUSR1)
