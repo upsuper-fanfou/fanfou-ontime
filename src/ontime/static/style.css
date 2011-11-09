@@ -138,9 +138,9 @@ a:visited { outline: none; }
     background-color: #f8f8f8;
     font-weight: bold;
 }
-#sidebar a#new_plan { background-position: -2px 0; }
-#sidebar a#list_plans { background-position: -2px -45px; }
-#sidebar a#list_logs { background-position: -2px -90px; }
+#sidebar a#menu_new_plan { background-position: -2px 0; }
+#sidebar a#menu_list_plans { background-position: -2px -45px; }
+#sidebar a#menu_list_logs { background-position: -2px -90px; }
 
 #tip {
     margin-top: 20px;
@@ -295,3 +295,6 @@ form .picker { font-size: 12px; position: absolute; z-index: 100; }
 .paginator li a:hover { color: #fff; background: #ccc; }
 .paginator li.current { font-weight: bold; }
 .paginator li.current a { background: #ccc; color: #fff; }
+
+body .ui-dialog, #edit_plan { overflow: visible; }
+#edit_plan { display: none; }

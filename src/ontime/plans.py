@@ -118,8 +118,11 @@ def edit_plan():
         return redirect(url_for('list_plans'))
 
     status = request.form['status']
+    date = request.form['date']
     time = request.form['time']
-    time = datetime.strptime(time, '%Y-%m-%d %H:%M')
+    time = datetime.strptime('%s %s' % (date, time), '%Y-%m-%d %H:%M')
+    timezone = int(request.form['timezone'])
+    time -= timedelta(minutes=timezone)
     period = int(request.form['period'])
     priority = int(request.form['priority'])
     if priority < -10:
@@ -128,14 +131,15 @@ def edit_plan():
         priority = 10
     timeout = int(request.form['timeout'])
 
-    cur.execute("""
-        REPLACE INTO `plans`
-        (`id`, `user_id`, `status`, `time`, `period`, `priority`, `timeout`)
-        VALUE (%s, %s, %s, %s, %s, %s, %s)
-        """, (plan_id, session['user_id'], status,
-            time, period, priority, timeout))
-    g.db.commit()
-    notify_daemon()
+    if status:
+        cur.execute("""
+            REPLACE INTO `plans`
+            (`id`, `user_id`, `status`, `time`, `period`, `priority`, `timeout`)
+            VALUE (%s, %s, %s, %s, %s, %s, %s)
+            """, (plan_id, session['user_id'], status,
+                time, period, priority, timeout))
+        g.db.commit()
+        notify_daemon()
 
     flash('修改成功', 'success')
     return redirect_to_plans(time)

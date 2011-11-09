@@ -1,21 +1,6 @@
 $(function() {
     var $doc = $(document);
 
-    $('#stream').click(function(e) {
-        var $target = $(e.target);
-        var plan_id = $target.parents('li').attr('plan_id');
-        if ($target.hasClass('edit')) {
-            // TODO
-        } else if ($target.hasClass('delete')) {
-            e.preventDefault();
-            if (confirm('真的要删除这条计划吗？')) {
-                var $form = $('#form_delete');
-                $('[name=id]', $form).val(plan_id);
-                $form.submit();
-            }
-        }
-    });
-
     function getTimeDiff(minutes) {
         var ret = {};
         if (minutes % 10080 == 0) {
@@ -153,6 +138,7 @@ $(function() {
             }
         });
 
+        this.$form = $form;
         this.empty = function() {
             var now = new Date();
             this.setStatus('');
@@ -191,6 +177,43 @@ $(function() {
             $a_timeout.text(getTimeout(minutes).text);
         };
     }
-    var form = new PlanForm($('form'));
-    form.empty();
+
+    var form;
+    if ($('#new_plan').length) {
+        form = new PlanForm($('#new_plan form'));
+        form.empty();
+    } else if ($('#edit_plan').length) {
+        form = new PlanForm($('#edit_plan form'));
+    }
+
+    $('#stream').click(function(e) {
+        var $target = $(e.target);
+        var $par = $target.parents('li');
+        var plan_id = $par.attr('plan_id');
+        if ($target.hasClass('edit')) {
+            var time = $('.time', $par).attr('time');
+            time = OT.dt.parseTime(time);
+            $('[name=id]', form.$form).val(plan_id);
+            form.setStatus($('p', $par).text());
+            form.setDate(OT.dt.formatDate(time));
+            form.setTime(OT.dt.formatTime(time));
+            // FIXME
+            form.setTimezone(OT.dt.timeoffset);
+            form.setPeriod(0);
+            form.setPriority(0);
+            form.setTimeout(10);
+            $('#edit_plan').dialog({
+                width: $('#stream').width() + 36,
+                modal: true
+            });
+            // TODO
+        } else if ($target.hasClass('delete')) {
+            e.preventDefault();
+            if (confirm('真的要删除这条计划吗？')) {
+                var $form = $('#form_delete');
+                $('[name=id]', $form).val(plan_id);
+                $form.submit();
+            }
+        }
+    });
 });

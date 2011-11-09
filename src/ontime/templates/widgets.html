@@ -24,3 +24,30 @@
     <script type="text/javascript" src="{{ url_for('static', filename='libs/jquery-ui-timepicker-zh-CN.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='libs/jquery-ui-timepicker.css') }}" />
 {%- endmacro -%}
+
+{%- macro planform(action, btn_text, id=False) -%}
+    <form action="{{ action }}" method="POST">
+        <textarea name="status" rows="3"></textarea>
+        <input type="submit" value="{{ btn_text }}" />
+        <ul id="basic_params">
+            <li><a href="#" class="date"></a></li>
+            <li><a href="#" class="time"></a></li>
+            <li><a href="#" class="timezone"></a></li>
+        </ul>
+        <ul id="advanced_params">
+            <li><a href="#" class="period"></a></li>
+            <li><a href="#" class="priority"></a></li>
+            <li><a href="#" class="timeout"></a></li>
+        </ul>
+        <div class="datepicker picker"></div>
+        <div class="timepicker picker"></div>
+        {% if id %}<input type="hidden" name="id" />{% endif %}
+        <input type="hidden" name="date" />
+        <input type="hidden" name="time" />
+        <input type="hidden" name="timezone" />
+        <input type="hidden" name="period" value="0" />
+        <input type="hidden" name="priority" value="0" />
+        <input type="hidden" name="timeout" value="10" />
+        <input type="hidden" name="token" value="{{ session.post_token }}" />
+    </form>
+{%- endmacro -%}

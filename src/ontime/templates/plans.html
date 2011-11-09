@@ -3,6 +3,8 @@
 {% block title %}进行中的计划{% endblock %}
 {% block head %}
     {{ super() }}
+    {%- from 'widgets.html' import jqueryui -%}
+    {{ jqueryui() }}
     <script type="text/javascript" src="{{ url_for('static', filename='plans.js') }}"></script>
 {% endblock %}
 {% block content %}
@@ -34,6 +36,10 @@
     </li>
     {% endfor %}
 </ul>
+<div id="edit_plan" title="编辑计划">
+    {%- from 'widgets.html' import planform with context -%}
+    {{ planform(url_for('edit_plan'), '修改计划', True) }}
+</div>
 <form action="{{ url_for('delete_plan') }}" method="POST" id="form_delete">
     <input type="hidden" name="id" />
     <input type="hidden" name="token" value="{{ session.post_token }}" />

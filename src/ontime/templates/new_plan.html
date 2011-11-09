@@ -12,27 +12,8 @@
     <h2>{{ self.title() }}</h2>
     <span>可以输入<strong>140</strong>字</span>
 </div>
-<form action="{{ url_for('new_plan') }}" method="POST">
-    <textarea name="status" rows="3"></textarea>
-    <input type="submit" value="添加计划" />
-    <ul id="basic_params">
-        <li><a href="#" class="date"></a></li>
-        <li><a href="#" class="time"></a></li>
-        <li><a href="#" class="timezone"></a></li>
-    </ul>
-    <ul id="advanced_params">
-        <li><a href="#" class="period"></a></li>
-        <li><a href="#" class="priority"></a></li>
-        <li><a href="#" class="timeout"></a></li>
-    </ul>
-    <div class="datepicker picker"></div>
-    <div class="timepicker picker"></div>
-    <input type="hidden" name="date" />
-    <input type="hidden" name="time" />
-    <input type="hidden" name="timezone" />
-    <input type="hidden" name="period" value="0" />
-    <input type="hidden" name="priority" value="0" />
-    <input type="hidden" name="timeout" value="10" />
-    <input type="hidden" name="token" value="{{ session.post_token }}" />
-</form>
+<div id="new_plan">
+    {%- from 'widgets.html' import planform with context -%}
+    {{ planform(url_for('new_plan'), '添加计划') }}
+</div>
 {% endblock %}

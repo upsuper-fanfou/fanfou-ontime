@@ -32,7 +32,7 @@
             <div id="sidebar">
                 <ul>
                     {% for href, id, caption in nav_sidebar %}
-                    <li><a href="{{ href|e }}" id="{{ id|e }}"{% if id == current_page %} class="current"{% endif %}>{{ caption|e }}</a></li>
+                    <li><a href="{{ href|e }}" id="menu_{{ id|e }}"{% if id == current_page %} class="current"{% endif %}>{{ caption|e }}</a></li>
                     {% endfor %}
                 </ul>
             </div>

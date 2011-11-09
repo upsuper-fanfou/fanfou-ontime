@@ -31,6 +31,7 @@ OT.dt = (function() {
         var delta = day.getTime() - today.getTime();
         return delta / 86400000;
     }
+
     return {
         timeoffset: timeoffset,
         formatTimezone: function(timeoffset) {
@@ -72,6 +73,13 @@ OT.dt = (function() {
             return OT.dt.formatDate(time, is_convert) + ' ' +
                    OT.dt.formatTime(time) + ' ' +
                    '(' + OT.dt.formatTimezone(timeoffset) + ')';
-        }
+        },
+        parseTime: function(time) {
+            var t = time.split(/[:\s-]/);
+            time = Date.UTC(
+                parseFloat(t[0]), parseFloat(t[1]) - 1, parseFloat(t[2]),
+                parseFloat(t[3]), parseFloat(t[4]), parseFloat(t[5]));
+            return new Date(time);
+        },
     };
 })();
