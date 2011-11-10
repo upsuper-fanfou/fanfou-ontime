@@ -65,9 +65,7 @@ $(function() {
             $datepicker.datepicker({
                 minDate: new Date(),
                 defaultDate: $i_date.val(),
-                onSelect: function(dateText, inst) {
-                    form.setDate(dateText);
-                }
+                onSelect: form.setDate
             });
         });
         generatePicker($a_time, $timepicker, 'hasDatepicker', function() {
@@ -90,17 +88,13 @@ $(function() {
         generatePicker($a_tz, $tzpicker, 'hasTzpicker', function() {
             $tzpicker.tzpicker({
                 value: $i_tz.val(),
-                onSelect: function(timeoffset, inst) {
-                    form.setTimezone(timeoffset);
-                }
+                onSelect: form.setTimezone
             });
         });
         generatePicker($a_period, $intpicker, 'hasIntpicker', function() {
             $intpicker.intpicker({
                 value: $i_period.val(),
-                onSelect: function(period, inst) {
-                    form.setPeriod(period);
-                }
+                onSelect: form.setPeriod
             });
         });
 
