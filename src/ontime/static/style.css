@@ -282,7 +282,7 @@ form li a.time { background-position: -7px -185px; }
 form li a.timezone { background-position: -7px -230px; }
 form ul#advanced_params {
     margin: -105px 0 0 175px;
-    width: 15em;
+    width: 13em;
 }
 form li a.period { background-position: -9px -275px; }
 form li a.priority { background-position: -9px -320px; }
