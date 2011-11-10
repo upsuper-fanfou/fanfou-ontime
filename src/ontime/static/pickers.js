@@ -104,4 +104,114 @@
             $.Widget.prototype.destroy.call(this);
         }
     });
+
+    $.widget('ot.intpicker', {
+        options: {
+            value: 0,
+            onSelect: function(period, inst) {}
+        },
+        _create: function() {
+            var $elem = this.element;
+            if ($elem.hasClass('hasIntpicker'))
+                return;
+            $elem.addClass('hasIntpicker');
+
+            var inst = this;
+            var itp_id = Math.random().toString().replace('.', '');
+            this.itp_id = itp_id;
+
+            var $div = $('<div />');
+            $div.addClass('ui-widget ui-widget-content ui-helper-clearfix ui-corner-all')
+                .addClass('ui-datepicker-inline ui-datepicker ui-timepicker-div')
+                .attr('id', 'ui_intpicker_' + itp_id);
+            var $header = $('<div />');
+            $header.addClass('ui-widget-header ui-helper-clearfix ui-corner-all')
+                   .append($('<div />').addClass('ui-datepicker-title').text('设置循环'));
+            $div.append($header);
+
+            function cycleUpdate() {
+                if ($('#ui_intpicker_cycle_' + itp_id).prop('checked')) {
+                    var num = $('#ui_intpicker_num_' + itp_id).val();
+                    var unit = $('#ui_intpicker_unit_' + itp_id).val();
+                    if (num)
+                        inst._update(parseInt(num) * parseInt(unit), true);
+                }
+            }
+
+            var $ul = $('<ul />');
+            $ul.append($('<li />')
+                    .append(
+                        $('<input type="radio" />')
+                        .attr('id', 'ui_intpicker_nocycle_' + itp_id)
+                        .attr('name', 'cycle_' + itp_id)
+                        .change(function() {
+                            if (this.checked) inst._update(0);
+                        }))
+                    .append(
+                        $('<label />')
+                        .attr('for', 'ui_intpicker_nocycle_' + itp_id)
+                        .text('不循环')))
+               .append($('<li />')
+                    .append(
+                        $('<input type="radio" />')
+                        .attr('id', 'ui_intpicker_cycle_' + itp_id)
+                        .attr('name', 'cycle_' + itp_id)
+                        .focus(function() {
+                            $(this).next().find('input').focus()
+                        })
+                        .change(cycleUpdate))
+                    .append(
+                        $('<label />')
+                        .attr('for', 'ui_intpicker_cycle_' + itp_id)
+                        .text('循环：每'))
+                    .append(
+                        $('<input type="number" />')
+                        .attr('id', 'ui_intpicker_num_' + itp_id)
+                        .focus(function(e) {
+                            $('#ui_intpicker_cycle_' + itp_id).prop('checked', true);
+                        })
+                        .keypress(function(e) { setTimeout(cycleUpdate, 10); }))
+                    .append(
+                        $('<select />')
+                        .attr('id', 'ui_intpicker_unit_' + itp_id)
+                        .append($('<option />').val(1).text('分钟'))
+                        .append($('<option />').val(60).text('小时'))
+                        .append($('<option />').val(1440).text('天'))
+                        .append($('<option />').val(10080).text('周'))
+                        .change(cycleUpdate)
+                        .keypress(function(e) { setTimeout(cycleUpdate, 10); })
+                        ));
+            $div.append($ul);
+
+            $elem.append($div);
+            $div.show();
+
+            this._update(this.options.value);
+        },
+        _update: function(value, noupdate) {
+            var itp_id = this.itp_id;
+            if (! noupdate) {
+                var period = OT.td.getPeriod(value);
+                if (! period.cycle) {
+                    $('#ui_intpicker_nocycle_' + itp_id).prop('checked', true);
+                } else {
+                    $('#ui_intpicker_cycle_' + itp_id).prop('checked', true);
+                    $('#ui_intpicker_num_' + itp_id).val(period.num);
+                    $('#ui_intpicker_unit_' + itp_id).val(period.unit);
+                }
+            }
+            this.options.onSelect(value, this);
+        },
+        _setOption: function(key, value) {
+            this.options[key] = value;
+            if (key == 'value')
+                this._update(value);
+        },
+        destroy: function() {
+            this.element.removeClass('hasIntpicker');
+            this.element.empty();
+            $.Widget.prototype.destroy.call(this);
+        }
+    });
+
 })(jQuery);

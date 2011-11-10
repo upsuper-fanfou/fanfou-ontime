@@ -1,35 +1,11 @@
 $(function() {
     var $doc = $(document);
 
-    function getTimeDiff(minutes) {
-        var ret = {};
-        if (minutes % 10080 == 0) {
-            ret.unit = 10080; ret.name = '周';
-        } else if (minutes % 1440 == 0) {
-            ret.unit = 1440; ret.name = '天';
-        } else if (minutes % 60 == 0) {
-            ret.unit = 60; ret.name = '小时';
-        } else {
-            ret.unit = 1; ret.name = '分钟';
-        }
-        ret.num = minutes / ret.unit;
-        return ret;
-    }
 
-    function getPeriod(minutes) {
-        if (minutes == 0) {
-            return { cycle: false, text: '不循环' };
-        } else {
-            var ret = getTimeDiff(minutes);
-            ret.cycle = true;
-            ret.text = '每' + ret.num + ret.name;
-            return ret;
-        }
-    }
     $('#stream span.period').each(function() {
         var $t = $(this);
         var period = parseInt($t.attr('period'));
-        var text = getPeriod(period).text;
+        var text = OT.td.getPeriod(period).text;
         $t.text(text);
     });
 
@@ -44,16 +20,6 @@ $(function() {
             return '最低优先级';
         } else {
             return '普通优先级';
-        }
-    }
-
-    function getTimeout(minutes) {
-        if (minutes == 0) {
-            return { text: '永远有效' };
-        } else {
-            var ret = getTimeDiff(minutes);
-            ret.text = ret.num + ret.name + '内有效';
-            return ret;
         }
     }
 
@@ -75,6 +41,7 @@ $(function() {
         var $datepicker = $('.datepicker', $form);
         var $timepicker = $('.timepicker', $form);
         var $tzpicker = $('.tzpicker', $form);
+        var $intpicker = $('.intpicker', $form);
 
         function generatePicker($a, $picker, has_class, load_picker) {
             $a.click(function(e) {
@@ -86,7 +53,7 @@ $(function() {
                     var off = $a.position();
                     $picker.css({
                         top: off.top + 'px',
-                        left: (off.left + $a.outerWidth()) + 'px'
+                        left: (off.left + 35) + 'px'
                     });
                     load_picker();
                 }
@@ -128,11 +95,20 @@ $(function() {
                 }
             });
         });
+        generatePicker($a_period, $intpicker, 'hasIntpicker', function() {
+            $intpicker.intpicker({
+                value: $i_period.val(),
+                onSelect: function(period, inst) {
+                    form.setPeriod(period);
+                }
+            });
+        });
 
         $(document).click(function() {
             $datepicker.datepicker('destroy');
             $timepicker.timepicker('destroy');
             $tzpicker.tzpicker('destroy');
+            $intpicker.intpicker('destroy');
         });
 
         $form.submit(function(e) {
@@ -170,7 +146,7 @@ $(function() {
         };
         this.setPeriod = function(minutes) {
             $i_period.val(minutes);
-            $a_period.text(getPeriod(minutes).text);
+            $a_period.text(OT.td.getPeriod(minutes).text);
         };
         this.setPriority = function(pri) {
             $i_pri.val(pri);
@@ -178,7 +154,7 @@ $(function() {
         };
         this.setTimeout = function(minutes) {
             $i_timeout.val(minutes);
-            $a_timeout.text(getTimeout(minutes).text);
+            $a_timeout.text(OT.td.getTimeout(minutes).text);
         };
     }
 
@@ -201,8 +177,8 @@ $(function() {
             form.setStatus($('p', $par).text());
             form.setDate(OT.dt.formatDate(time));
             form.setTime(OT.dt.formatTime(time));
-            // FIXME
             form.setTimezone(OT.dt.timeoffset);
+            // FIXME
             form.setPeriod(0);
             form.setPriority(0);
             form.setTimeout(10);

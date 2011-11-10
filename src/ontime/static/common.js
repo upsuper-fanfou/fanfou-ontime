@@ -1,4 +1,5 @@
 var OT = {};
+
 OT.dt = (function() {
     var now = new Date();
     var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -81,5 +82,43 @@ OT.dt = (function() {
                 parseFloat(t[3]), parseFloat(t[4]), parseFloat(t[5]));
             return new Date(time);
         },
+    };
+})();
+
+OT.td = (function() {
+    return {
+        getTimeDiff: function(minutes) {
+            var ret = {};
+            if (minutes % 10080 == 0) {
+                ret.unit = 10080; ret.name = '周';
+            } else if (minutes % 1440 == 0) {
+                ret.unit = 1440; ret.name = '天';
+            } else if (minutes % 60 == 0) {
+                ret.unit = 60; ret.name = '小时';
+            } else {
+                ret.unit = 1; ret.name = '分钟';
+            }
+            ret.num = minutes / ret.unit;
+            return ret;
+        },
+        getPeriod: function(minutes) {
+            if (minutes == 0) {
+                return { cycle: false, text: '不循环' };
+            } else {
+                var ret = OT.td.getTimeDiff(minutes);
+                ret.cycle = true;
+                ret.text = '每' + ret.num + ret.name;
+                return ret;
+            }
+        },
+        getTimeout: function(minutes) {
+            if (minutes == 0) {
+                return { text: '永远有效' };
+            } else {
+                var ret = OT.td.getTimeDiff(minutes);
+                ret.text = ret.num + ret.name + '内有效';
+                return ret;
+            }
+        }
     };
 })();
