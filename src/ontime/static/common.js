@@ -122,3 +122,21 @@ OT.td = (function() {
         }
     };
 })();
+
+OT.pri = (function() {
+    return {
+        getPriority: function(pri) {
+            if (pri <= -10) {
+                return '最高优先级';
+            } else if (pri <= -5) {
+                return '高优先级';
+            } else if (pri >= 10) {
+                return '最低优先级';
+            } else if (pri >= 5) {
+                return '低优先级';
+            } else {
+                return '普通优先级';
+            }
+        }
+    };
+})();

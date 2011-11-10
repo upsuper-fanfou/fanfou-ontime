@@ -1,27 +1,12 @@
 $(function() {
     var $doc = $(document);
 
-
     $('#stream span.period').each(function() {
         var $t = $(this);
         var period = parseInt($t.attr('period'));
         var text = OT.td.getPeriod(period).text;
         $t.text(text);
     });
-
-    function getPriority(pri) {
-        if (pri <= -10) {
-            return '最高优先级';
-        } else if (pri <= -5) {
-            return '高优先级';
-        } else if (pri >= 5) {
-            return '低优先级';
-        } else if (pri >= 10) {
-            return '最低优先级';
-        } else {
-            return '普通优先级';
-        }
-    }
 
     function PlanForm($form) {
         var form = this;
@@ -42,6 +27,7 @@ $(function() {
         var $timepicker = $('.timepicker', $form);
         var $tzpicker = $('.tzpicker', $form);
         var $intpicker = $('.intpicker', $form);
+        var $pripicker = $('.pripicker', $form);
 
         function generatePicker($a, $picker, has_class, load_picker) {
             $a.click(function(e) {
@@ -97,12 +83,19 @@ $(function() {
                 onSelect: form.setPeriod
             });
         });
+        generatePicker($a_pri, $pripicker, 'hasPripicker', function() {
+            $pripicker.pripicker({
+                value: $i_pri.val(),
+                onSelect: form.setPriority
+            });
+        });
 
         $(document).click(function() {
             $datepicker.datepicker('destroy');
             $timepicker.timepicker('destroy');
             $tzpicker.tzpicker('destroy');
             $intpicker.intpicker('destroy');
+            $pripicker.pripicker('destroy');
         });
 
         $form.submit(function(e) {
@@ -144,7 +137,7 @@ $(function() {
         };
         this.setPriority = function(pri) {
             $i_pri.val(pri);
-            $a_pri.text(getPriority(pri));
+            $a_pri.text(OT.pri.getPriority(pri));
         };
         this.setTimeout = function(minutes) {
             $i_timeout.val(minutes);

@@ -115,11 +115,11 @@
             if ($elem.hasClass('hasIntpicker'))
                 return;
             $elem.addClass('hasIntpicker');
-
+    
             var inst = this;
             var itp_id = Math.random().toString().replace('.', '');
             this.itp_id = itp_id;
-
+    
             var $div = $('<div />');
             $div.addClass('ui-widget ui-widget-content ui-helper-clearfix ui-corner-all')
                 .addClass('ui-datepicker-inline ui-datepicker ui-timepicker-div')
@@ -185,7 +185,7 @@
 
             $elem.append($div);
             $div.show();
-
+    
             this._update(this.options.value);
         },
         _update: function(value, noupdate) {
@@ -209,6 +209,70 @@
         },
         destroy: function() {
             this.element.removeClass('hasIntpicker');
+            this.element.empty();
+            $.Widget.prototype.destroy.call(this);
+        }
+    });
+
+    $.widget('ot.pripicker', {
+        options: {
+            value: 0,
+            onSelect: function(value, inst) {}
+        },
+        _create: function() {
+            var $elem = this.element;
+            if ($elem.hasClass('hasPripicker'))
+                return;
+            $elem.addClass('hasPripicker');
+
+            var inst = this;
+            var pp_id = Math.random().toString().replace('.', '');
+            this.pp_id = pp_id;
+
+            var $div = $('<div />');
+            $div.addClass('ui-widget ui-widget-content ui-helper-clearfix ui-corner-all')
+                .addClass('ui-datepicker-inline ui-datepicker ui-timepicker-div')
+                .attr('id', 'ui_tzpicker_' + pp_id);
+            var $header = $('<div />');
+            $header.addClass('ui-widget-header ui-helper-clearfix ui-corner-all')
+                   .append($('<div />').addClass('ui-datepicker-title').text('设置优先级'));
+            $div.append($header);
+
+            var $dl = $('<dl />');
+            $dl.append($('<dt />').text('优先级').attr('id', 'ui_pripicker_str_label_' + pp_id))
+               .append($('<dd />').attr('id', 'ui_pripicker_str_' + pp_id))
+               .append($('<dt />').text('选择').attr('id', 'ui_pripicker_pri_label_' + pp_id))
+               .append($('<dd />').attr('id', 'ui_pripicker_pri_' + pp_id))
+            $div.append($dl);
+
+            $elem.append($div);
+            $div.show();
+
+            this.pri_slider = $dl.find('#ui_pripicker_pri_' + pp_id).slider({
+                orientation: 'horizontal',
+                min: -10,
+                max: 10,
+                step: 1,
+                slide: function(e, ui) {
+                    inst._update(-ui.value);
+                }
+            });
+
+            this._update(this.options.value);
+        },
+        _update: function(value) {
+            this.pri_slider.slider('option', 'value', -value);
+            this.element.find('#ui_pripicker_str_' + this.pp_id)
+                .text(OT.pri.getPriority(value));
+            this.options.onSelect(value, this);
+        },
+        _setOption: function(key, value) {
+            this.options[key] = value;
+            if (key == 'value')
+                this._update(value);
+        },
+        destroy: function() {
+            this.element.removeClass('hasPripicker');
             this.element.empty();
             $.Widget.prototype.destroy.call(this);
         }
