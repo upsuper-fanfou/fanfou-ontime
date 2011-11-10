@@ -18,16 +18,9 @@
         <p>{{ plan.status|e }}</p>
         <span class="info">
             将于 <span class="time" time="{{ plan.time }}"></span>
-            {% if plan.period %}以及接下来
-                {% if plan.period is divisibleby(10080) %}
-                每{{ plan.period / 10080 }}周
-                {% elif plan.period is divisibleby(1440) %}
-                每{{ plan.period / 1440 }}天
-                {% elif plan.period is divisibleby(60) %}
-                每{{ plan.period / 60 }}小时
-                {% else %}
-                每{{ plan.period }}分钟
-                {% endif %}
+            {% if plan.period %}
+                以及接下来
+                <span class="period" period="{{ plan.period }}"></span>
             {% endif %}
             发送 |
             <a href="#" class="edit">编辑</a> |

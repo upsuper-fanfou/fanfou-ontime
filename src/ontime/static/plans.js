@@ -22,10 +22,16 @@ $(function() {
         } else {
             var ret = getTimeDiff(minutes);
             ret.cycle = true;
-            ret.text = '循环：每' + ret.num + ret.name;
+            ret.text = '每' + ret.num + ret.name;
             return ret;
         }
     }
+    $('#stream span.period').each(function() {
+        var $t = $(this);
+        var period = parseInt($t.attr('period'));
+        var text = getPeriod(period).text;
+        $t.text(text);
+    });
 
     function getPriority(pri) {
         if (pri <= -10) {
@@ -51,10 +57,6 @@ $(function() {
         }
     }
 
-    function stopPropagation(e) {
-        e.stopPropagation();
-    }
-
     function PlanForm($form) {
         var form = this;
         var $status = $('[name=status]', $form);
@@ -72,63 +74,65 @@ $(function() {
         var $a_timeout = $('a.timeout', $form);
         var $datepicker = $('.datepicker', $form);
         var $timepicker = $('.timepicker', $form);
+        var $tzpicker = $('.tzpicker', $form);
 
-        $a_date.click(function(e) {
-            var hadDatepicker = $datepicker.hasClass('hasDatepicker');
-            $doc.click();
-            e.stopPropagation();
-            
-            if (! hadDatepicker) {
-                var off = $a_date.position();
-                $datepicker.css({
-                    top: off.top + 'px',
-                    left: (off.left + $a_date.outerWidth()) + 'px'
-                });
-                $datepicker.datepicker({
-                    minDate: new Date(),
-                    defaultDate: $i_date.val(),
-                    onSelect: function(dateText, inst) {
-                        form.setDate(dateText);
-                    }
-                });
-            }
+        function generatePicker($a, $picker, has_class, load_picker) {
+            $a.click(function(e) {
+                var hadPicker = $picker.hasClass(has_class);
+                $doc.click();
+                e.stopPropagation();
+                
+                if (! hadPicker) {
+                    var off = $a.position();
+                    $picker.css({
+                        top: off.top + 'px',
+                        left: (off.left + $a.outerWidth()) + 'px'
+                    });
+                    load_picker();
+                }
+            });
+            $picker.click(function(e) { e.stopPropagation(); });
+        }
+
+        generatePicker($a_date, $datepicker, 'hasDatepicker', function() {
+            $datepicker.datepicker({
+                minDate: new Date(),
+                defaultDate: $i_date.val(),
+                onSelect: function(dateText, inst) {
+                    form.setDate(dateText);
+                }
+            });
         });
-        $datepicker.click(stopPropagation);
-
-        $a_time.click(function(e) {
-            var hadDatepicker = $timepicker.hasClass('hasDatepicker');
-            $doc.click();
-            e.stopPropagation();
-
-            if (! hadDatepicker) {
-                var off = $a_time.position();
-                $timepicker.css({
-                    top: off.top + 'px',
-                    left: (off.left + $a_time.outerWidth()) + 'px'
-                });
-                var time = $i_time.val();
-                time = time.split(':');
-                $timepicker.timepicker({
-                    timeOnly: true,
-                    showButtonPanel: false,
-                    stepHour: 1,
-                    stepMinute: 1,
-                    hour: parseInt(time[0]),
-                    minute: parseInt(time[1]),
-                    onSelect: function(timeText, inst) {
-                        // Timepicker 在第一次点击小时条的时候
-                        // 会传入一个空字符串
-                        if (timeText)
-                            form.setTime(timeText);
-                    }
-                });
-            }
+        generatePicker($a_time, $timepicker, 'hasDatepicker', function() {
+            var time = $i_time.val().split(':');
+            $timepicker.timepicker({
+                timeOnly: true,
+                showButtonPanel: false,
+                stepHour: 1,
+                stepMinute: 1,
+                hour: parseInt(time[0]),
+                minute: parseInt(time[1]),
+                onSelect: function(timeText, inst) {
+                    // Timepicker 在第一次点击小时条的时候
+                    // 会传入一个空字符串
+                    if (timeText)
+                        form.setTime(timeText);
+                }
+            });
         });
-        $timepicker.click(stopPropagation);
+        generatePicker($a_tz, $tzpicker, 'hasTzpicker', function() {
+            $tzpicker.tzpicker({
+                value: $i_tz.val(),
+                onSelect: function(timeoffset, inst) {
+                    form.setTimezone(timeoffset);
+                }
+            });
+        });
 
         $(document).click(function() {
             $datepicker.datepicker('destroy');
             $timepicker.timepicker('destroy');
+            $tzpicker.tzpicker('destroy');
         });
 
         $form.submit(function(e) {

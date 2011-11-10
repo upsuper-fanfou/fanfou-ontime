@@ -23,6 +23,7 @@
     <script type="text/javascript" src="{{ url_for('static', filename='libs/jquery-ui-timepicker.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='libs/jquery-ui-timepicker-zh-CN.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='libs/jquery-ui-timepicker.css') }}" />
+    <script type="text/javascript" src="{{ url_for('static', filename='pickers.js') }}"></script>
 {%- endmacro -%}
 
 {%- macro planform(action, btn_text, id=False) -%}
@@ -41,6 +42,10 @@
         </ul>
         <div class="datepicker picker"></div>
         <div class="timepicker picker"></div>
+        <div class="tzpicker picker"></div>
+        <div class="intpicker picker"></div>
+        <div class="pripicker picker"></div>
+        <div class="topicker picker"></div>
         {% if id %}<input type="hidden" name="id" />{% endif %}
         <input type="hidden" name="date" />
         <input type="hidden" name="time" />

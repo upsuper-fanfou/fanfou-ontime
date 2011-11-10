@@ -298,3 +298,5 @@ form .picker { font-size: 12px; position: absolute; z-index: 100; }
 
 body .ui-dialog, #edit_plan { overflow: visible; }
 #edit_plan { display: none; }
+
+.tzlist { font-size: 90%; }
