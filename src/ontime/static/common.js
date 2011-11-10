@@ -38,7 +38,7 @@ OT.dt = (function() {
             var timezone = 'UTC';
             if (timeoffset > 0) {
                 timezone += '+';
-            } else {
+            } else if (timeoffset < 0) {
                 timeoffset = -timeoffset;
                 timezone += '-';
             }
