@@ -232,7 +232,7 @@
             var $div = $('<div />');
             $div.addClass('ui-widget ui-widget-content ui-helper-clearfix ui-corner-all')
                 .addClass('ui-datepicker-inline ui-datepicker ui-timepicker-div')
-                .attr('id', 'ui_tzpicker_' + pp_id);
+                .attr('id', 'ui_pripicker_' + pp_id);
             var $header = $('<div />');
             $header.addClass('ui-widget-header ui-helper-clearfix ui-corner-all')
                    .append($('<div />').addClass('ui-datepicker-title').text('设置优先级'));
@@ -273,6 +273,114 @@
         },
         destroy: function() {
             this.element.removeClass('hasPripicker');
+            this.element.empty();
+            $.Widget.prototype.destroy.call(this);
+        }
+    });
+
+    $.widget('ot.topicker', {
+        options: {
+            value: 10,
+            onSelect: function(timeout, inst) {}
+        },
+        _create: function() {
+            var $elem = this.element;
+            if ($elem.hasClass('hasTopicker'))
+                return;
+            $elem.addClass('hasTopicker');
+    
+            var inst = this;
+            var top_id = Math.random().toString().replace('.', '');
+            this.top_id = top_id;
+
+            var $div = $('<div />');
+            $div.addClass('ui-widget ui-widget-content ui-helper-clearfix ui-corner-all')
+                .addClass('ui-datepicker-inline ui-datepicker ui-timepicker-div')
+                .attr('id', 'ui_topicker_' + top_id);
+            var $header = $('<div />');
+            $header.addClass('ui-widget-header ui-helper-clearfix ui-corner-all')
+                   .append($('<div />').addClass('ui-datepicker-title').text('设置超时'));
+            $div.append($header);
+
+            function timeoutUpdate() {
+                if ($('#ui_topicker_timeout' + top_id).prop('checked')) {
+                    var num = $('#ui_topicker_num_' + top_id).val();
+                    var unit = $('#ui_topicker_unit_' + top_id).val();
+                    if (num)
+                        inst._update(parseInt(num) * parseInt(unit), true);
+                }
+            }
+
+            var $ul = $('<ul />');
+            $ul.append($('<li />')
+                    .append(
+                        $('<input type="radio" />')
+                        .attr('id', 'ui_topicker_timeout_' + top_id)
+                        .attr('name', 'timeout_' + top_id)
+                        .focus(function() {
+                            $(this).next().find('input').focus()
+                        })
+                        .change(timeoutUpdate))
+                    .append(
+                        $('<input type="number" />')
+                        .attr('id', 'ui_topicker_num_' + top_id)
+                        .focus(function(e) {
+                            $('#ui_topicker_timeout_' + top_id).prop('checked', true);
+                        })
+                        .keypress(function(e) { setTimeout(timeoutUpdate, 10); }))
+                    .append(
+                        $('<select />')
+                        .attr('id', 'ui_topicker_unit_' + top_id)
+                        .append($('<option />').val(1).text('分钟'))
+                        .append($('<option />').val(60).text('小时'))
+                        .append($('<option />').val(1440).text('天'))
+                        .append($('<option />').val(10080).text('周'))
+                        .change(timeoutUpdate)
+                        .keypress(function(e) { setTimeout(timeoutUpdate, 10); }))
+                    .append(
+                        $('<label />')
+                        .attr('for', 'ui_topicker_timeout_' + top_id)
+                        .text('内有效')))
+               .append($('<li />')
+                    .append(
+                        $('<input type="radio" />')
+                        .attr('id', 'ui_topicker_notimeout_' + top_id)
+                        .attr('name', 'timeout_' + top_id)
+                        .change(function() {
+                            if (this.checked) inst._update(0);
+                        }))
+                    .append(
+                        $('<label />')
+                        .attr('for', 'ui_topicker_nocycle_' + top_id)
+                        .text('永远有效')))
+            $div.append($ul);
+
+            $elem.append($div);
+            $div.show();
+    
+            this._update(this.options.value);
+        },
+        _update: function(value, noupdate) {
+            var top_id = this.top_id;
+            if (! noupdate) {
+                var timeout = OT.td.getTimeout(value);
+                if (! timeout.timeout) {
+                    $('#ui_topicker_notimeout_' + top_id).prop('checked', true);
+                } else {
+                    $('#ui_topicker_timeout_' + top_id).prop('checked', true);
+                    $('#ui_topicker_num_' + top_id).val(timeout.num);
+                    $('#ui_topicker_unit_' + top_id).val(timeout.unit);
+                }
+            }
+            this.options.onSelect(value, this);
+        },
+        _setOption: function(key, value) {
+            this.options[key] = value;
+            if (key == 'value')
+                this._update(value);
+        },
+        destroy: function() {
+            this.element.removeClass('hasTopicker');
             this.element.empty();
             $.Widget.prototype.destroy.call(this);
         }

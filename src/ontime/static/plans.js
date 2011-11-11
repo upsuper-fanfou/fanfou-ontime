@@ -28,12 +28,14 @@ $(function() {
         var $tzpicker = $('.tzpicker', $form);
         var $intpicker = $('.intpicker', $form);
         var $pripicker = $('.pripicker', $form);
+        var $topicker = $('.topicker', $form);
 
         function generatePicker($a, $picker, has_class, load_picker) {
             $a.click(function(e) {
                 var hadPicker = $picker.hasClass(has_class);
                 $doc.click();
                 e.stopPropagation();
+                e.preventDefault();
                 
                 if (! hadPicker) {
                     var off = $a.position();
@@ -89,6 +91,12 @@ $(function() {
                 onSelect: form.setPriority
             });
         });
+        generatePicker($a_timeout, $topicker, 'hasTopicker', function() {
+            $topicker.topicker({
+                value: $i_timeout.val(),
+                onSelect: form.setTimeout
+            });
+        });
 
         $(document).click(function() {
             $datepicker.datepicker('destroy');
@@ -96,6 +104,7 @@ $(function() {
             $tzpicker.tzpicker('destroy');
             $intpicker.intpicker('destroy');
             $pripicker.pripicker('destroy');
+            $topicker.topicker('destroy');
         });
 
         $form.submit(function(e) {

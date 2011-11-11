@@ -113,10 +113,11 @@ OT.td = (function() {
         },
         getTimeout: function(minutes) {
             if (minutes == 0) {
-                return { text: '永远有效' };
+                return { timeout: false, text: '永远有效' };
             } else {
                 var ret = OT.td.getTimeDiff(minutes);
                 ret.text = ret.num + ret.name + '内有效';
+                ret.timeout = true;
                 return ret;
             }
         }
