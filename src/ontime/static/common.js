@@ -27,8 +27,8 @@ OT.dt = (function() {
         return num;
     }
     function diffDate(time) {
-        var day =
-            new Date(time.getFullYear(), time.getMonth(), time.getDate());
+        var day = new Date(time.getUTCFullYear(),
+                time.getUTCMonth(), time.getUTCDate());
         var delta = day.getTime() - today.getTime();
         return delta / 86400000;
     }
