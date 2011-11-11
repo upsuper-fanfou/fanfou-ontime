@@ -1,0 +1,6 @@
+ui-widget { font-family: inherit; }
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight  {border: 1px solid #d3e7eB; background: #ebf3f5; color: #363636; }
+.ui-datepicker { box-shadow: 0 5px 10px rgba(0, 0, 0, .25); }
+.ui-datepicker .ui-datepicker-title { text-shadow: 0 1px 0 white; }
+.ui-datepicker table { margin:0 0 .2em; }
+.ui-datepicker td span, .ui-datepicker td a { text-align: center; text-shadow: 0 1px 0 white; }
