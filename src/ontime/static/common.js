@@ -35,7 +35,7 @@ OT.dt = (function() {
 
     return {
         timeoffset: timeoffset,
-        formatTimezone: function(timeoffset) {
+        formatTimezone: function(timeoffset, brackets) {
             var timezone = 'UTC';
             if (timeoffset > 0) {
                 timezone += '+';
@@ -50,6 +50,8 @@ OT.dt = (function() {
                     timezone += Math.floor(timeoffset / 60) +
                         ':' + timeoffset % 60;
             }
+            if (brackets)
+                timezone = '(' + timezone + ')';
             return timezone;
         },
         formatDate: function(date, is_convert) {
@@ -60,26 +62,28 @@ OT.dt = (function() {
                     datestr = spec_datestr[datedelta];
             }
             if (! datestr) {
-                datestr = fixNumber(date.getFullYear(), 4) + '-' +
-                          fixNumber(date.getMonth() + 1, 2) + '-' +
-                          fixNumber(date.getDate(), 2);
+                datestr = fixNumber(date.getUTCFullYear(), 4) + '-' +
+                          fixNumber(date.getUTCMonth() + 1, 2) + '-' +
+                          fixNumber(date.getUTCDate(), 2);
             }
             return datestr;
         },
         formatTime: function(time) {
-            return fixNumber(time.getHours(), 2) + ':' +
-                   fixNumber(time.getMinutes(), 2);
+            return fixNumber(time.getUTCHours(), 2) + ':' +
+                   fixNumber(time.getUTCMinutes(), 2);
         },
         formatDateTime: function(time, is_convert) {
             return OT.dt.formatDate(time, is_convert) + ' ' +
-                   OT.dt.formatTime(time) + ' ' +
-                   '(' + OT.dt.formatTimezone(timeoffset) + ')';
+                   OT.dt.formatTime(time);
         },
-        parseTime: function(time) {
+        parseTime: function(time, timeoffset) {
             var t = time.split(/[:\s-]/);
             time = Date.UTC(
                 parseFloat(t[0]), parseFloat(t[1]) - 1, parseFloat(t[2]),
                 parseFloat(t[3]), parseFloat(t[4]), parseFloat(t[5]));
+            if (! timeoffset)
+                timeoffset = OT.dt.timeoffset;
+            time += timeoffset * 60000;
             return new Date(time);
         },
     };
@@ -141,3 +145,9 @@ OT.pri = (function() {
         }
     };
 })();
+
+if (! Date.now) {
+    Date.now = function() {
+        return +new Date();
+    };
+}

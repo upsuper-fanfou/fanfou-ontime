@@ -116,7 +116,8 @@ $(function() {
 
         this.$form = $form;
         this.empty = function() {
-            var now = new Date();
+            var now = Date.now() + OT.dt.timeoffset * 60000;
+            now = new Date(now);
             this.setStatus('');
             this.setDate(OT.dt.formatDate(now));
             this.setTime(OT.dt.formatTime(now));
@@ -167,22 +168,33 @@ $(function() {
         var $par = $target.parents('li');
         var plan_id = $par.attr('plan_id');
         if ($target.hasClass('edit')) {
-            var time = $('.time', $par).attr('time');
-            time = OT.dt.parseTime(time);
             $('[name=id]', form.$form).val(plan_id);
             form.setStatus($('p', $par).text());
+
+            var $time = $('.time', $par);
+            var time = OT.dt.parseTime($time.attr('time'),
+                                       parseInt($time.attr('timeoffset')));
             form.setDate(OT.dt.formatDate(time));
             form.setTime(OT.dt.formatTime(time));
-            form.setTimezone(OT.dt.timeoffset);
-            // FIXME
-            form.setPeriod(0);
-            form.setPriority(0);
-            form.setTimeout(10);
+            var timeoffset = parseInt($time.attr('timeoffset'));
+            form.setTimezone(timeoffset);
+
+            var $period = $('.period', $par);
+            if ($period.length)
+                form.setPeriod(parseInt($period.attr('period')));
+            else
+                form.setPeriod(0);
+
+            var pri = $('.priority', $par).attr('priority');
+            form.setPriority(parseInt(pri));
+
+            var timeout = $('.timeout', $par).attr('timeout');
+            form.setTimeout(parseInt(timeout));
+
             $('#edit_plan').dialog({
                 width: $('#stream').width() + 36,
                 modal: true
             });
-            // TODO
         } else if ($target.hasClass('delete')) {
             e.preventDefault();
             if (confirm('真的要删除这条计划吗？')) {

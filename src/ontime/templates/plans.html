@@ -17,12 +17,14 @@
     <li id="plan_{{ plan.id }}" plan_id="{{ plan.id }}">
         <p>{{ plan.status|e }}</p>
         <span class="info">
-            将于 <span class="time" time="{{ plan.time }}"></span>
+            将于 <span class="time" time="{{ plan.time }}" timeoffset="{{ plan.timeoffset }}"></span>
             {% if plan.period %}
                 以及接下来
                 <span class="period" period="{{ plan.period }}"></span>
             {% endif %}
             发送 |
+            <span class="priority" priority="{{ plan.priority }}"></span>
+            <span class="timeout" timeout="{{ plan.timeout }}"></span>
             <a href="#" class="edit">编辑</a> |
             <a href="#" class="delete">删除</a>
         </span>

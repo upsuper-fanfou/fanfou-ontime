@@ -24,7 +24,7 @@ def list_plans(page=1):
         """, (user_id, ))
     count = cur.fetchone()['c']
     cur.execute("""
-        SELECT `id`, `status`, `time`, `period`, `priority`, `timeout`
+        SELECT `id`, `status`, `time`, `timeoffset`, `period`, `priority`, `timeout`
         FROM `plans` WHERE `user_id`=%s
         ORDER BY `time`, `priority`, `timeout`
         LIMIT %s, %s
@@ -81,11 +81,12 @@ def new_plan():
 
     if status:
         cur.execute("""
-            INSERT INTO `plans`
-            (`user_id`, `status`, `time`, `period`, `priority`, `timeout`)
-            VALUE (%s, %s, %s, %s, %s, %s)
+            INSERT INTO `plans` (
+                `user_id`, `status`, `time`, `timeoffset`,
+                `period`, `priority`, `timeout`
+            ) VALUE (%s, %s, %s, %s, %s, %s, %s)
             """, (session['user_id'], status,
-                time, period, priority, timeout))
+                time, timezone, period, priority, timeout))
         g.db.commit()
         notify_daemon()
         flash('添加成功', 'success')
@@ -133,11 +134,12 @@ def edit_plan():
 
     if status:
         cur.execute("""
-            REPLACE INTO `plans`
-            (`id`, `user_id`, `status`, `time`, `period`, `priority`, `timeout`)
-            VALUE (%s, %s, %s, %s, %s, %s, %s)
+            REPLACE INTO `plans` (
+                `id`, `user_id`, `status`, `time`, `timeoffset`, 
+                `period`, `priority`, `timeout`
+            ) VALUE (%s, %s, %s, %s, %s, %s, %s, %s)
             """, (plan_id, session['user_id'], status,
-                time, period, priority, timeout))
+                time, timezone, period, priority, timeout))
         g.db.commit()
         notify_daemon()
 
