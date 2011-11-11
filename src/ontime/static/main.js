@@ -6,9 +6,10 @@ $(function() {
         if (! time) return;
         var timeoffset = $t.attr('timeoffset');
         if (timeoffset)
-            time = OT.dt.parseTime(time, parseInt(timeoffset));
+            timeoffset = parseInt(timeoffset);
         else
-            time = OT.dt.parseTime(time);
+            timeoffset = OT.dt.timeoffset;
+        time = OT.dt.parseTime(time, timeoffset);
         $t.text(OT.dt.formatDateTime(time, true) + ' ' +
             OT.dt.formatTimezone(timeoffset, true));
     });
