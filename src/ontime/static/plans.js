@@ -157,8 +157,17 @@ $(function() {
 
     var form;
     if ($('#new_plan').length) {
-        form = new PlanForm($('#new_plan form'));
+        var $form = $('#new_plan form');
+        form = new PlanForm($form);
         form.empty();
+
+        var $status = $('[name=status]', $form);
+        var $left = $('#title span strong');
+        setInterval(function() {
+            var left = 140 - $status.val().length;
+            if (left != $left.text())
+                $left.text(left);
+        }, 30);
     } else if ($('#edit_plan').length) {
         form = new PlanForm($('#edit_plan form'));
     }
