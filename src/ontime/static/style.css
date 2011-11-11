@@ -75,6 +75,13 @@ a:visited { outline: none; }
     }
 }
 
+#beta {
+    width: 150px; height: 150px;
+    position: absolute;
+    top: 0; right: 0;
+    background: url(images/beta.png) no-repeat;
+}
+
 #container {
     width: 760px;
     margin: 20px auto;
