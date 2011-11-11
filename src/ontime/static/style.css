@@ -287,6 +287,15 @@ form li a {
 form li a.date { background-position: -8px -140px; }
 form li a.time { background-position: -7px -185px; }
 form li a.timezone { background-position: -7px -230px; }
+form #advanced_params_trigger {
+    margin: -105px 0 70px 175px;
+    padding: 8px 25px 8px 0;
+    width: 4em;
+    display: none;
+    height: 19px;
+    line-height: 19px;
+    background: url(images/advanced.png) no-repeat right center;
+}
 form ul#advanced_params {
     margin: -105px 0 0 175px;
     width: 13em;

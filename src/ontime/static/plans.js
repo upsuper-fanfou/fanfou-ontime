@@ -29,6 +29,13 @@ $(function() {
         var $intpicker = $('.intpicker', $form);
         var $pripicker = $('.pripicker', $form);
         var $topicker = $('.topicker', $form);
+        var $trigger = $('#advanced_params_trigger', $form);
+        var $advanced = $('#advanced_params', $form);
+
+        $trigger.click(function(e) {
+            e.preventDefault();
+            form.showAdvanced();
+        });
 
         function generatePicker($a, $picker, has_class, load_picker) {
             $a.click(function(e) {
@@ -125,6 +132,7 @@ $(function() {
             this.setPeriod(0);
             this.setPriority(0);
             this.setTimeout(10);
+            this.hideAdvanced();
         };
         this.setStatus = function(status) {
             $status.val(status);
@@ -152,6 +160,14 @@ $(function() {
         this.setTimeout = function(minutes) {
             $i_timeout.val(minutes);
             $a_timeout.text(OT.td.getTimeout(minutes).text);
+        };
+        this.showAdvanced = function() {
+            $trigger.hide();
+            $advanced.show();
+        };
+        this.hideAdvanced = function() {
+            $advanced.hide();
+            $trigger.css('display', 'block');
         };
     }
 
@@ -188,17 +204,30 @@ $(function() {
             var timeoffset = parseInt($time.attr('timeoffset'));
             form.setTimezone(timeoffset);
 
+            var show_advanced = false;
+
             var $period = $('.period', $par);
-            if ($period.length)
+            if ($period.length) {
                 form.setPeriod(parseInt($period.attr('period')));
-            else
+                show_advanced = true;
+            } else {
                 form.setPeriod(0);
+            }
 
             var pri = $('.priority', $par).attr('priority');
-            form.setPriority(parseInt(pri));
+            pri = parseInt(pri);
+            form.setPriority(pri);
+            if (pri)
+                show_advanced = true;
 
             var timeout = $('.timeout', $par).attr('timeout');
-            form.setTimeout(parseInt(timeout));
+            timeout = parseInt(timeout);
+            form.setTimeout(timeout);
+            if (timeout != 10)
+                show_advanced = true;
+
+            if (! show_advanced)
+                form.hideAdvanced();
 
             $('#edit_plan').dialog({
                 width: $('#stream').width() + 36,
