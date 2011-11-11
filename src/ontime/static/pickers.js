@@ -1,5 +1,13 @@
 (function($) {
 
+    function focusInput() {
+        $(this).nextAll('input').focus();
+    }
+
+    function stopPropagation(e) {
+        e.stopPropagation();
+    }
+
     $.widget('ot.tzpicker', {
         options: {
             value: 480,
@@ -156,9 +164,8 @@
                         $('<input type="radio" />')
                         .attr('id', 'ui_intpicker_cycle_' + itp_id)
                         .attr('name', 'cycle_' + itp_id)
-                        .focus(function() {
-                            $(this).next().find('input').focus()
-                        })
+                        .focus(focusInput)
+                        .click(focusInput)
                         .change(cycleUpdate))
                     .append(
                         $('<label />')
@@ -183,6 +190,11 @@
                         ));
             $div.append($ul);
 
+            $div.keypress(stopPropagation)
+                .keyup(stopPropagation)
+                .keydown(stopPropagation)
+                .mousedown(stopPropagation)
+                .change(stopPropagation);
             $elem.append($div);
             $div.show();
     
@@ -303,7 +315,7 @@
             $div.append($header);
 
             function timeoutUpdate() {
-                if ($('#ui_topicker_timeout' + top_id).prop('checked')) {
+                if ($('#ui_topicker_timeout_' + top_id).prop('checked')) {
                     var num = $('#ui_topicker_num_' + top_id).val();
                     var unit = $('#ui_topicker_unit_' + top_id).val();
                     if (num)
@@ -317,9 +329,8 @@
                         $('<input type="radio" />')
                         .attr('id', 'ui_topicker_timeout_' + top_id)
                         .attr('name', 'timeout_' + top_id)
-                        .focus(function() {
-                            $(this).next().find('input').focus()
-                        })
+                        .focus(focusInput)
+                        .click(focusInput)
                         .change(timeoutUpdate))
                     .append(
                         $('<input type="number" />')
@@ -355,6 +366,11 @@
                         .text('永远有效')))
             $div.append($ul);
 
+            $div.keypress(stopPropagation)
+                .keyup(stopPropagation)
+                .keydown(stopPropagation)
+                .mousedown(stopPropagation)
+                .change(stopPropagation);
             $elem.append($div);
             $div.show();
     
