@@ -274,7 +274,7 @@ form li a {
     display: block;
     height: 15px;
     line-height: 15px;
-    padding: 10px 35px;
+    padding: 10px 0 10px 35px;
     background: url(images/iconset.png) no-repeat left top;
 }
 form li a.date { background-position: -8px -140px; }
@@ -301,14 +301,19 @@ body .ui-dialog, #edit_plan { overflow: visible; }
 
 .tzlist { font-size: 90%; }
 .picker input[type=radio] {
-    margin-right: 8px;
+    margin: -2px 5px 0 0;
 }
 .picker input[type=number] {
-    width: 4.5em; height: 12px;
+    width: 3.5em; height: 12px;
     text-align: right;
     line-height: 12px;
-    margin: 5px;
+    margin: 0 5px;
 }
 .picker select {
-    margin: 5px 5px 5px 0;
+    margin-right: 5px;
 }
+
+.picker .ui-timepicker-div dl { padding: 3px 0 0 8px; }
+.picker .ui-timepicker-div dl dt { height: .8em; line-height: .8em; }
+.picker .ui-timepicker-div dl dd { height: .8em; line-height: .8em; margin-top: -.8em; }
+.picker .ui-timepicker-div ul { padding: 0 0 10px 8px; }
