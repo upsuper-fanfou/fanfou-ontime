@@ -1,0 +1,55 @@
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:             fanfou-ontime
+# Required-Start:       $remote_fs $networking $mysql $syslog
+# Required-Stop:        $remote_fs $networking $mysql $syslog
+# Default-Start:        2 3 4 5
+# Default-Stop:         0 1 6
+# Short-Description:    fanfou ontime daemon
+### END INIT INFO
+
+set -e
+
+CONFIG_FILE=/etc/fanfou/ontime/config.py
+PID_FILE=/var/run/fanfou/ontime.pid
+
+pidof_ontime() {
+    if [ -e "$PID_FILE" ]; then
+        return $(cat "$PID_FILE")
+    fi
+}
+
+case "$1" in
+  start)
+        sudo -u www-data -g www-data \
+            ONTIME_SETTINGS="$CONFIG_FILE" \
+            /var/www/fanfou/ontime/daemon.py &
+        ;;
+  stop)
+        PID=$(pidof_ontime)
+        kill $PID
+        i=0
+        while kill -0 $PID 2> /dev/null; do
+            if [ $i = '60' ]; then
+                break;
+            else
+                if [ $i = '0' ]; then
+                    echo -n " ... waiting "
+                else
+                    echo -n "."
+                fi
+                i=$($i+1)
+                sleep 1
+            fi
+        done
+        ;;
+    reload)
+        PID=$(pidof_ontime)
+        kill -USR1 $PID
+        ;;
+    *)
+        log_success_msg "Usage: /etc/init.d/fanfou-ontime {start|stop|reload}"
+        exit 1
+        ;;
+esac

@@ -37,12 +37,22 @@ def refresh_queue():
     refresh_cond.notify()
     refresh_cond.release()
 
+def try_loop(func):
+    count = 0
+    while True:
+        try:
+            if not func():
+                break
+        except Exception, e:
+            count += 1
+            logging.warning(repr(e))
+
 class FeedingThread(threading.Thread):
     def __init__(self):
         self._db = connect_db()
         self._limit_list = defaultdict(lambda: [datetime.utcnow(), 0])
         self._wait_list = []
-        super(FeedingThread, self).__init__()
+        super(FeedingThread, self).__init__(name="f")
     
     def run(self):
         refresh_cond.acquire()
@@ -50,8 +60,7 @@ class FeedingThread(threading.Thread):
         wake_up = utcnow.replace(minute=utcnow.minute + 1,
                 second=0, microsecond=0)
         refresh_cond.wait((wake_up - utcnow).total_seconds())
-        while self.mainloop():
-            pass
+        try_loop(self.mainloop)
         refresh_cond.release()
 
     def _add_to_queue(self, plan, limit):
@@ -127,13 +136,12 @@ class FeedingThread(threading.Thread):
         return True
 
 class SendingThread(threading.Thread):
-    def __init__(self):
-        self._client = oauth.Client(consumer)
-        super(SendingThread, self).__init__()
+    def __init__(self, num):
+        self._client = oauth.Client(consumer, timeout=5)
+        super(SendingThread, self).__init__(name='s%d' % (num, ))
 
     def run(self):
-        while self.mainloop():
-            pass
+        try_loop(self.mainloop)
 
     def mainloop(self):
         plan = plan_queue.get()
@@ -151,10 +159,14 @@ class SendingThread(threading.Thread):
             token = oauth.Token(plan.token, plan.secret)
             self._client.token = token
             # 发送
-            resp, content = self._client.request(
-                    'http://api.fanfou.com/statuses/update.json',
-                    'POST', urlencode({'status': status.encode('utf8')})
-                    )
+            try:
+                resp, content = self._client.request(
+                        'http://api.fanfou.com/statuses/update.json',
+                        'POST', urlencode({'status': status.encode('utf8')})
+                        )
+            except:
+                result_queue.put((plan.id, 'other', exec_time, status))
+                return True
             self._client.token = None
             # 测试返回结果
             result = 'other'
@@ -178,11 +190,10 @@ class SendingThread(threading.Thread):
 class WritingThread(threading.Thread):
     def __init__(self):
         self._db = connect_db()
-        super(WritingThread, self).__init__()
+        super(WritingThread, self).__init__(name="w")
 
     def run(self):
-        while self.mainloop():
-            pass
+        try_loop(self.mainloop)
 
     def mainloop(self):
         result = result_queue.get()
@@ -255,10 +266,13 @@ if __name__ == '__main__':
     config_file = os.environ['ONTIME_SETTINGS']
     # 读取配置文件
     execfile(config_file)
+    FORMAT = '%(asctime)s %(threadName)s/%(levelname)s: %(message)s'
     if DEBUG:
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(format=FORMAT,
+                level=logging.DEBUG)
     else:
-        logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
+        logging.basicConfig(filename=LOG_FILE, format=FORMAT,
+                level=logging.DEBUG)
     # 判断 pidfile
     if path.exists(PID_FILE):
         print 'Fanfou-ontime daemon has already been running'
@@ -287,7 +301,7 @@ if __name__ == '__main__':
     writing_thread = WritingThread()
     sending_threads = []
     for i in range(THREAD_AMOUNT):
-        sending_threads.append(SendingThread())
+        sending_threads.append(SendingThread(i))
     # 开始运行
     running = True
     threads = sending_threads + [feeding_thread, writing_thread]
