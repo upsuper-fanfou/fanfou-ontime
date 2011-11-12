@@ -257,6 +257,8 @@ if __name__ == '__main__':
     execfile(config_file)
     if DEBUG:
         logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
     # 判断 pidfile
     if path.exists(PID_FILE):
         print 'Fanfou-ontime daemon has already been running'
