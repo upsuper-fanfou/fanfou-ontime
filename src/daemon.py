@@ -66,7 +66,8 @@ class FeedingThread(threading.Thread):
     def _add_to_queue(self, plan, limit):
         enqueue = True
         utcnow = datetime.utcnow()
-        if limit and plan.time + timedelta(minutes=plan.timeout) > utcnow:
+        if limit and (not plan.timeout or \
+                plan.time + timedelta(minutes=plan.timeout) > utcnow):
             num, span = [int(i) for i in limit.split('/')]
             span = timedelta(minutes=span)
             list_item = self._limit_list[plan.user_id]
@@ -152,7 +153,7 @@ class SendingThread(threading.Thread):
         now = datetime.utcnow()
         exec_time = now
         # 判断是否已超时
-        if time + timedelta(minutes=timeout) < now:
+        if timeout and time + timedelta(minutes=timeout) < now:
             result = 'timeout'
         else:
             logging.debug('Posting status')
