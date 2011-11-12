@@ -278,7 +278,8 @@ if __name__ == '__main__':
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGHUP, signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTRAP, signal_handler)
+    if DEBUG:
+        signal.signal(signal.SIGTRAP, signal_handler)
     # 清理数据库中的数据
     clean_plans_flag()
     # 初始化线程
@@ -299,7 +300,7 @@ if __name__ == '__main__':
         except SystemExit, e:
             break
     # 消除运行标签并等待线程结束
-    logging.debug('Exiting daemon')
+    logging.info('Exiting daemon')
     running = False
     refresh_queue()
     for i in range(THREAD_AMOUNT):
@@ -310,4 +311,5 @@ if __name__ == '__main__':
     # 结束
     clean_plans_flag()
     os.unlink(PID_FILE)
+    logging.info('Exit complete')
     raise e
