@@ -37,7 +37,7 @@ def refresh_queue():
     refresh_cond.notify()
     refresh_cond.release()
 
-def try_loop(func):
+def try_loop(func, try_func=None):
     count = 0
     while True:
         try:
@@ -46,13 +46,18 @@ def try_loop(func):
         except Exception, e:
             count += 1
             logging.warning(repr(e))
+            if try_func:
+                try_func()
 
 class FeedingThread(threading.Thread):
     def __init__(self):
-        self._db = connect_db()
+        self._connect_db()
         self._limit_list = defaultdict(lambda: [datetime.utcnow(), 0])
         self._wait_list = []
         super(FeedingThread, self).__init__(name="f")
+
+    def _connect_db(self):
+        self._db = connect_db()
     
     def run(self):
         refresh_cond.acquire()
@@ -60,7 +65,7 @@ class FeedingThread(threading.Thread):
         wake_up = utcnow.replace(minute=utcnow.minute + 1,
                 second=0, microsecond=0)
         refresh_cond.wait((wake_up - utcnow).total_seconds())
-        try_loop(self.mainloop)
+        try_loop(self.mainloop, self._connect_db)
         refresh_cond.release()
 
     def _add_to_queue(self, plan, limit):
@@ -138,11 +143,14 @@ class FeedingThread(threading.Thread):
 
 class SendingThread(threading.Thread):
     def __init__(self, num):
-        self._client = oauth.Client(consumer, timeout=5)
+        self._create_client()
         super(SendingThread, self).__init__(name='s%d' % (num, ))
 
+    def _create_client(self):
+        self._client = oauth.Client(consumer, timeout=10)
+
     def run(self):
-        try_loop(self.mainloop)
+        try_loop(self.mainloop, self._create_client)
 
     def mainloop(self):
         plan = plan_queue.get()
@@ -190,11 +198,14 @@ class SendingThread(threading.Thread):
 
 class WritingThread(threading.Thread):
     def __init__(self):
-        self._db = connect_db()
+        self._connect_db()
         super(WritingThread, self).__init__(name="w")
 
+    def _connect_db(self):
+        self._db = connect_db()
+
     def run(self):
-        try_loop(self.mainloop)
+        try_loop(self.mainloop, self._connect_db)
 
     def mainloop(self):
         result = result_queue.get()
