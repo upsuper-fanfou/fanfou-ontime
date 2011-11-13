@@ -70,8 +70,8 @@ $(function() {
                 showButtonPanel: false,
                 stepHour: 1,
                 stepMinute: 1,
-                hour: parseInt(time[0]),
-                minute: parseInt(time[1]),
+                hour: parseFloat(time[0]),
+                minute: parseFloat(time[1]),
                 onSelect: function(timeText, inst) {
                     // Timepicker 在第一次点击小时条的时候
                     // 会传入一个空字符串
