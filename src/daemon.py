@@ -154,6 +154,13 @@ class SendingThread(threading.Thread):
 
     def mainloop(self):
         plan = plan_queue.get()
+        try:
+            return self._process_plan(plan)
+        except:
+            plan_queue.put(plan)
+            raise
+
+    def _process_plan(self, plan):
         if not plan:
             return False
         priority, time, timeout, plan = plan
@@ -209,6 +216,13 @@ class WritingThread(threading.Thread):
 
     def mainloop(self):
         result = result_queue.get()
+        try:
+            return self._process_result(result)
+        except:
+            request.put(result)
+            raise
+
+    def _process_result(self, result):
         if not result:
             return False
         plan_id, result, time, status = result
