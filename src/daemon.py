@@ -61,10 +61,6 @@ class FeedingThread(threading.Thread):
     
     def run(self):
         refresh_cond.acquire()
-        utcnow = datetime.utcnow()
-        wake_up = utcnow.replace(minute=utcnow.minute + 1,
-                second=0, microsecond=0)
-        refresh_cond.wait((wake_up - utcnow).total_seconds())
         try_loop(self.mainloop, self._connect_db)
         refresh_cond.release()
 
@@ -301,8 +297,19 @@ if __name__ == '__main__':
                 level=logging.DEBUG)
     # 判断 pidfile
     if path.exists(PID_FILE):
-        print 'Fanfou-ontime daemon has already been running'
-        exit(1)
+        exists = True
+        pid_file = open(PID_FILE, 'r')
+        pid = int(pid_file.read())
+        pid_file.close()
+        try:
+            os.kill(pid, signal.SIGUSR1)
+        except OSError, e:
+            if e.errno == 3:
+                os.unlink(PID_FILE)
+                exists = False
+        if exists:
+            print 'Fanfou-ontime daemon has already been running'
+            exit(1)
     # 创建 pidfile
     pid_file = open(PID_FILE, 'w')
     pid_file.write(str(os.getpid()))
