@@ -58,7 +58,10 @@ def notify_daemon():
         return
     pid = int(pid_file.read())
     pid_file.close()
-    os.kill(pid, signal.SIGUSR1)
+    try:
+        os.kill(pid, signal.SIGUSR1)
+    except OSError:
+        pass
 
 @app.route('/plan/new', methods=['GET', 'POST'])
 def new_plan():

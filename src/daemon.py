@@ -47,7 +47,10 @@ def try_loop(func, try_func=None):
             count += 1
             logging.warning(repr(e))
             if try_func:
-                try_func()
+                try:
+                    try_func()
+                except:
+                    pass
 
 class FeedingThread(threading.Thread):
     def __init__(self):
