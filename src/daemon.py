@@ -215,7 +215,7 @@ class WritingThread(threading.Thread):
         try:
             return self._process_result(result)
         except:
-            request.put(result)
+            result_queue.put(result)
             raise
 
     def _process_result(self, result):
