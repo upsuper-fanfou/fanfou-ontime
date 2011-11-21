@@ -14,7 +14,7 @@ OT.dt = (function() {
         0: '今天',
         1: '明天',
         2: '后天',
-        3: '大后天',
+        3: '大后天'
     };
 
     function fixNumber(num, width) {
@@ -85,7 +85,7 @@ OT.dt = (function() {
                 timeoffset = OT.dt.timeoffset;
             time += timeoffset * 60000;
             return new Date(time);
-        },
+        }
     };
 })();
 
