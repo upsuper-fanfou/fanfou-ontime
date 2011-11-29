@@ -199,7 +199,7 @@ class SendingThread(threading.Thread):
                 result = 'accepted'
             elif resp.status == 401:
                 result = 'unauthorized'
-        result_queue.put((plan.id, result, exec_time, status))
+        result_queue.put((plan, result, exec_time, status))
         return True
 
 class WritingThread(threading.Thread):
@@ -224,19 +224,14 @@ class WritingThread(threading.Thread):
     def _process_result(self, result):
         if not result:
             return False
-        plan_id, result, time, status = result
+        plan, result, time, status = result
         cur = self._db.cursor()
         # 读取计划信息
         cur.execute("""
-            SELECT `id`, `user_id`, `status`, `time`,
-                `period`, `priority`, `timeout`, 0, 0
-            FROM `plans` WHERE `id`=%s
-            FOR UPDATE
+            SELECT COUNT(`id`) FROM `plans`
+            WHERE `id`=%s FOR UPDATE
             """, (plan_id, ))
-        plan = cur.fetchone()
-        if not plan:
-            return True
-        plan = Plan(*plan)
+        is_there = cur.fetchone()[0]
         # 添加发送记录
         logging.debug('Writing Log')
         cur.execute("""
@@ -246,7 +241,9 @@ class WritingThread(threading.Thread):
             """,
             (plan.user_id, status, plan.status, plan.time, time, result))
         # 判断是否为周期计划
-        if not plan.period:
+        if not is_there:
+            pass
+        elif not plan.period:
             cur.execute("DELETE FROM `plans` WHERE `id`=%s", (plan_id, ))
         else:
             period = timedelta(minutes=plan.period)
