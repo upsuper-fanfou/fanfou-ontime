@@ -239,7 +239,7 @@ class WritingThread(threading.Thread):
         cur.execute("""
             SELECT COUNT(`id`) FROM `plans`
             WHERE `id`=%s FOR UPDATE
-            """, (plan_id, ))
+            """, (plan.id, ))
         is_there = cur.fetchone()[0]
         # 添加发送记录
         logging.debug('Writing Log')
@@ -253,7 +253,7 @@ class WritingThread(threading.Thread):
         if not is_there:
             pass
         elif not plan.period:
-            cur.execute("DELETE FROM `plans` WHERE `id`=%s", (plan_id, ))
+            cur.execute("DELETE FROM `plans` WHERE `id`=%s", (plan.id, ))
         else:
             period = timedelta(minutes=plan.period)
             # 计算下一次执行时间
