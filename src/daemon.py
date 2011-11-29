@@ -233,7 +233,10 @@ class WritingThread(threading.Thread):
             FROM `plans` WHERE `id`=%s
             FOR UPDATE
             """, (plan_id, ))
-        plan = Plan(*cur.fetchone())
+        plan = cur.fetchone()
+        if not plan:
+            return True
+        plan = Plan(*plan)
         # 添加发送记录
         logging.debug('Writing Log')
         cur.execute("""
