@@ -189,7 +189,7 @@ class SendingThread(threading.Thread):
                         'POST', urlencode({'status': status.encode('utf8')})
                         )
             except:
-                result_queue.put((plan.id, 'other', exec_time, status))
+                result_queue.put((plan, 'other', exec_time, status))
                 return True
             self._client.token = None
             # 测试返回结果
@@ -224,10 +224,13 @@ class WritingThread(threading.Thread):
 
     def mainloop(self):
         result = result_queue.get()
+        err_items = set()
         try:
             return self._process_result(result)
         except:
-            result_queue.put(result)
+            if id(result) not in err_items:
+                result_queue.put(result)
+                err_items.add(id(result))
             raise
 
     def _process_result(self, result):
