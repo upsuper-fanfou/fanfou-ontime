@@ -39,13 +39,22 @@ def refresh_queue():
 
 def try_loop(func, try_func=None):
     count = 0
+    errors = {}
     while True:
         try:
             if not func():
                 break
         except Exception, e:
             count += 1
-            logging.warning(repr(e))
+            err_args = e.args
+            if err_args in errors:
+                times = errors[err_args] + 1
+                errors[err_args] = times
+                if not (times & (times - 1)):
+                    logging.warning(repr(e) + ', %d times' % (times))
+            else:
+                logging.warning(repr(e))
+                errors[err_args] = 1
             if try_func:
                 try:
                     try_func()
@@ -297,7 +306,7 @@ if __name__ == '__main__':
                 level=logging.DEBUG)
     else:
         logging.basicConfig(filename=LOG_FILE, format=FORMAT,
-                level=logging.DEBUG)
+                level=logging.INFO)
     # 判断 pidfile
     if path.exists(PID_FILE):
         exists = True
