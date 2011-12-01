@@ -33,9 +33,11 @@ def connect_db():
 
 def refresh_queue():
     logging.debug('Refreshing feeding queue')
-    refresh_cond.acquire()
-    refresh_cond.notify()
-    refresh_cond.release()
+    if refresh_cond.acquire(blocking=False):
+        refresh_cond.notify()
+        refresh_cond.release()
+    else:
+        feeding_thread.raise_notify()
 
 def try_loop(func, try_func=None):
     count = 0
@@ -66,7 +68,11 @@ class FeedingThread(threading.Thread):
         self._connect_db()
         self._limit_list = defaultdict(lambda: [datetime.utcnow(), 0])
         self._wait_list = []
+        self._raised = False
         super(FeedingThread, self).__init__(name="f")
+
+    def raise_notify(self):
+        self._raised = True
 
     def _connect_db(self):
         self._db = connect_db()
@@ -146,7 +152,10 @@ class FeedingThread(threading.Thread):
             if not sleep_time or sleep_time > next_time:
                 sleep_time = next_time
         # 等待被唤醒
-        refresh_cond.wait(sleep_time)
+        if self._raised:
+            self._raised = False
+        else:
+            refresh_cond.wait(sleep_time)
         return True
 
 class SendingThread(threading.Thread):
