@@ -177,7 +177,7 @@
                         .focus(function(e) {
                             $('#ui_intpicker_cycle_' + itp_id).prop('checked', true);
                         })
-                        .keypress(function(e) { setTimeout(cycleUpdate, 10); }))
+                        .bind('input', function(e) { setTimeout(cycleUpdate, 10); }))
                     .append(
                         $('<select />')
                         .attr('id', 'ui_intpicker_unit_' + itp_id)
@@ -186,7 +186,7 @@
                         .append($('<option />').val(1440).text('天'))
                         .append($('<option />').val(10080).text('周'))
                         .change(cycleUpdate)
-                        .keypress(function(e) { setTimeout(cycleUpdate, 10); })
+                        .bind('input', function(e) { setTimeout(cycleUpdate, 10); })
                         ));
             $div.append($ul);
 
@@ -195,6 +195,7 @@
                 .keydown(stopPropagation)
                 .mousedown(stopPropagation)
                 .change(stopPropagation);
+                .bind('input', stopPropagation);
             $elem.append($div);
             $div.show();
     

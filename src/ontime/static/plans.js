@@ -151,7 +151,11 @@ $(function() {
         };
         this.setPeriod = function(minutes) {
             $i_period.val(minutes);
-            $a_period.text(OT.td.getPeriod(minutes).text);
+            var per = OT.td.getPeriod(minutes);
+            var text = per.text;
+            if (per.cycle)
+                text = '循环：' + text;
+            $a_period.text(text);
         };
         this.setPriority = function(pri) {
             $i_pri.val(pri);
