@@ -75,6 +75,8 @@ def new_plan():
     timezone = int(request.form['timezone'])
     time -= timedelta(minutes=timezone)
     period = int(request.form['period'])
+    if period < 0:
+        period = 0
     priority = int(request.form['priority'])
     if priority < -10:
         priority = -10
@@ -128,6 +130,8 @@ def edit_plan():
     timezone = int(request.form['timezone'])
     time -= timedelta(minutes=timezone)
     period = int(request.form['period'])
+    if period < 0:
+        period = 0
     priority = int(request.form['priority'])
     if priority < -10:
         priority = -10
