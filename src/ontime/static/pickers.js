@@ -174,6 +174,7 @@
                     .append(
                         $('<input type="number" />')
                         .attr('id', 'ui_intpicker_num_' + itp_id)
+                        .attr('min', '0')
                         .focus(function(e) {
                             $('#ui_intpicker_cycle_' + itp_id).prop('checked', true);
                         })
