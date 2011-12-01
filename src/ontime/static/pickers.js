@@ -194,7 +194,7 @@
                 .keyup(stopPropagation)
                 .keydown(stopPropagation)
                 .mousedown(stopPropagation)
-                .change(stopPropagation);
+                .change(stopPropagation)
                 .bind('input', stopPropagation);
             $elem.append($div);
             $div.show();
