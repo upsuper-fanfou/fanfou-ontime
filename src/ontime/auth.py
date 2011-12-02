@@ -25,7 +25,11 @@ authenticate_url = 'http://fanfou.com/oauth/authenticate'
 @app.before_request
 def before_request():
     if 'user_id' not in session:
-        if not request.path.startswith('/auth'):
+        if request.path.startswith('/auth'):
+            pass
+        elif request.path.startswith('/stat'):
+            pass
+        else:
             return redirect(url_for('auth'))
     else:
         user_id = session['user_id']

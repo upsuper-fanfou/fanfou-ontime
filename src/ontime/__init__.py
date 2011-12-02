@@ -48,3 +48,4 @@ import ontime.index
 import ontime.auth
 import ontime.plans
 import ontime.logs
+import ontime.stat

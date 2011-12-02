@@ -247,12 +247,6 @@ class WritingThread(threading.Thread):
             return False
         plan, result, time, status = result
         cur = self._db.cursor()
-        # 读取计划信息
-        cur.execute("""
-            SELECT COUNT(`id`) FROM `plans`
-            WHERE `id`=%s FOR UPDATE
-            """, (plan.id, ))
-        is_there = cur.fetchone()[0]
         # 添加发送记录
         logging.debug('Writing Log')
         cur.execute("""
@@ -262,9 +256,7 @@ class WritingThread(threading.Thread):
             """,
             (plan.user_id, status, plan.status, plan.time, time, result))
         # 判断是否为周期计划
-        if not is_there:
-            pass
-        elif not plan.period:
+        if not plan.period:
             cur.execute("DELETE FROM `plans` WHERE `id`=%s", (plan.id, ))
         else:
             period = timedelta(minutes=plan.period)
