@@ -203,6 +203,7 @@ a:visited { outline: none; }
 #footer a {
     border-bottom: 1px solid #999;
 }
+#footer a img { margin-bottom: -4px; }
 
 #title { margin-bottom: 5px; position: relative; }
 #title h2 { font-size: 18px; }
