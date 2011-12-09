@@ -47,7 +47,7 @@ def auth():
     client = oauth.Client(consumer)
     resp, content = client.request(request_token_url, 'GET')
     request_token = dict(urlparse.parse_qsl(content))
-    url = authenticate_url + '?' + urllib.urlencode({
+    url = authorize_url + '?' + urllib.urlencode({
         'oauth_token': request_token['oauth_token'],
         'oauth_callback': url_for('callback_page', _external=True)
         })
