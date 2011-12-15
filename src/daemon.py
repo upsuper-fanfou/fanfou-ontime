@@ -283,6 +283,7 @@ def signal_handler(signum, frame):
     if signum == signal.SIGUSR1:
         refresh_queue()
     elif signum == signal.SIGTERM or signum == signal.SIGINT:
+        logging.debug('Exit signal')
         sys.exit()
     elif DEBUG and signum == signal.SIGTRAP:
         try:
@@ -304,6 +305,17 @@ if __name__ == '__main__':
     config_file = os.environ['ONTIME_SETTINGS']
     # 读取配置文件
     execfile(config_file)
+    # 放弃管理员权限
+    if os.getuid() == 0:
+        if GROUP:
+            import grp
+            gid = grp.getgrnam(GROUP)[2]
+            os.setgid(gid)
+        if USER:
+            import pwd
+            uid = pwd.getpwnam(USER)[2]
+            os.setuid(uid)
+    # 设置记录信息
     FORMAT = '%(asctime)s %(threadName)s/%(levelname)s: %(message)s'
     if DEBUG:
         logging.basicConfig(format=FORMAT,
@@ -331,6 +343,7 @@ if __name__ == '__main__':
     pid_file.write(str(os.getpid()))
     pid_file.close()
     # 初始化数据
+    logging.info('Start')
     consumer = oauth.Consumer(CONSUMER_KEY, CONSUMER_SECRET)
     # 创建队列和条件锁
     plan_queue = Queue.PriorityQueue()
@@ -357,7 +370,6 @@ if __name__ == '__main__':
     for thread in threads:
         thread.start()
     # 等待
-    logging.info('Start')
     while True:
         try:
             signal.pause()

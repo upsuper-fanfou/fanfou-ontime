@@ -22,7 +22,11 @@ LOGS_PER_PAGE = 20
 # Daemon
 
 THREAD_AMOUNT = 10
+USER = ''
+GROUP = ''
 PID_FILE = '/var/run/fanfou/ontime.pid'
 LOG_FILE = '/var/log/fanfou/ontime.log'
+
+# Default settings
 
 DEFAULT_LIMIT = '3/10'
