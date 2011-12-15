@@ -315,6 +315,11 @@ if __name__ == '__main__':
             import pwd
             uid = pwd.getpwnam(USER)[2]
             os.setuid(uid)
+    # 如果非 Debug 模式则 fork
+    if not DEBUG:
+        pid = os.fork()
+        if pid != 0:
+            exit()
     # 设置记录信息
     FORMAT = '%(asctime)s %(threadName)s/%(levelname)s: %(message)s'
     if DEBUG:

@@ -5,14 +5,24 @@
 
 DAEMON=fanfou-ontime
 ARGS=
+PIDFILE=/var/run/fanfou/ontime.pid
 
 [ -r /etc/conf.d/$DAEMON ] && . /etc/conf.d/$DAEMON
 
-PID=$(get_pid $DAEMON)
+if [ -e "$PIDFILE" ]; then
+  PID=$(cat "$PIDFILE")
+  kill -0 "$PID"
+  if [ $? != 0 ]; then
+    PID=
+  fi
+else
+  PID=
+fi
 
 case "$1" in
   start)
     stat_busy "Starting $DAEMON"
+    export ONTIME_SETTINGS
     [ -z "$PID" ] && $DAEMON $ARGS &>/dev/null
     if [ $? = 0 ]; then
       add_daemon $DAEMON
@@ -54,7 +64,7 @@ case "$1" in
     ;;
    
   *)
-    echo "usage: $0 {start|stop|restart|reload}
+    echo "usage: $0 {start|stop|restart|reload}"
 esac
 
 exit 0
