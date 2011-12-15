@@ -357,6 +357,7 @@ if __name__ == '__main__':
     for thread in threads:
         thread.start()
     # 等待
+    logging.info('Start')
     while True:
         try:
             signal.pause()
