@@ -211,8 +211,10 @@ class SendingThread(threading.Thread):
                 except ValueError:
                     pass
                 else:
+                    strptime_lock.acquire()
                     create_time = datetime.strptime(content['created_at'],
                             '%a %b %d %H:%M:%S +0000 %Y')
+                    strptime_lock.release()
                     exec_time = create_time
                     result = 'success'
             elif resp.status == 202:
@@ -356,6 +358,7 @@ if __name__ == '__main__':
     plan_queue = Queue.PriorityQueue()
     result_queue = Queue.Queue()
     refresh_cond = threading.Condition()
+    strptime_lock = threading.RLock()
     # 设置信号处理
     signal.signal(signal.SIGUSR1, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
