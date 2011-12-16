@@ -50,15 +50,19 @@ def try_loop(func, try_func=None):
         except Exception, e:
             count += 1
             err_args = e.args
+            now_time = time.time()
             if err_args in errors:
-                times = errors[err_args] + 1
-                errors[err_args] = times
-                if not (times & (times - 1)):
-                    logging.warning(repr(e) + ', %d times' % (times))
+                times, last_time = errors[err_args]
             else:
-                logging.warning(repr(e))
-                errors[err_args] = 1
-            time.sleep(1)
+                times, last_time = 0, 0
+            if now_time - last_time > 300:
+                times = 0
+            times += 1
+            errors[err_args] = (times, now_time)
+            msg = repr(e)
+            if not (times & (times - 1)):
+                logging.warning(repr(e) + ', %d times' % (times))
+            time.sleep(times if times < 10 else 10)
             if try_func:
                 try:
                     try_func()
