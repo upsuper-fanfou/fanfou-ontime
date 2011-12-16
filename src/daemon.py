@@ -4,6 +4,7 @@
 import os
 import sys
 import json
+import time
 import Queue
 import signal
 import logging
@@ -57,6 +58,7 @@ def try_loop(func, try_func=None):
             else:
                 logging.warning(repr(e))
                 errors[err_args] = 1
+            time.sleep(1)
             if try_func:
                 try:
                     try_func()
